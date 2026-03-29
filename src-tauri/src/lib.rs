@@ -26,3 +26,12 @@ pub fn establish_connection() -> SqliteConnection {
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     SqliteConnection::establish(&database_url).expect("Failed to connect to database")
 }
+
+pub fn get_all_users() -> Vec<models::User> {
+    use crate::models::User;
+
+    use self::schema::users::dsl::*;
+    let conn = &mut establish_connection();
+    let fetched = users.select(User::as_select()).load(conn).expect("connection error");
+    fetched
+}
