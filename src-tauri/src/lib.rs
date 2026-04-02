@@ -2,8 +2,12 @@ use diesel::prelude::*;
 use dotenv::dotenv;
 use std::env;
 
+use crate::dto::UserData;
+
+
 pub mod models;
 pub mod schema;
+pub mod dto;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -27,11 +31,19 @@ pub fn establish_connection() -> SqliteConnection {
     SqliteConnection::establish(&database_url).expect("Failed to connect to database")
 }
 
-pub fn get_all_users() -> Vec<models::User> {
+#[specta::specta]
+#[tauri::command]
+pub fn get_all_users() -> Vec<dto::UserData> {
     use crate::models::User;
 
     use self::schema::users::dsl::*;
     let conn = &mut establish_connection();
     let fetched = users.select(User::as_select()).load(conn).expect("connection error");
-    fetched
+    let results = fetched.into_iter().map(|user| UserData {
+        id: user.id.expect("user id expected from database"),
+        email: user.email,
+        display_name: user.display_name,
+        created_at: user.created_at,
+    }).collect();
+    results
 }
