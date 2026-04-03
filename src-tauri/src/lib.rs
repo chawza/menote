@@ -1,6 +1,8 @@
 use diesel::prelude::*;
 use dotenv::dotenv;
+use tauri_specta::{Builder, collect_commands};
 use std::env;
+use specta_typescript::Typescript;
 
 use crate::dto::UserData;
 
@@ -9,17 +11,18 @@ pub mod models;
 pub mod schema;
 pub mod dto;
 
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![get_all_users]);
+
+    #[cfg(debug_assertions)]
+    specta_builder
+        .export(Typescript::default(), "../src/bindings.ts")
+        .expect("Failed to export typescript bindings");
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, get_all_users])
+        .invoke_handler(specta_builder.invoke_handler())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

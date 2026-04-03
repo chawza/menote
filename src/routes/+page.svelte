@@ -1,37 +1,39 @@
 <script lang="ts">
-  import { invoke } from "@tauri-apps/api/core";
+  import { commands, type UserData} from "../bindings";
+    import { onMount } from "svelte";
 
-  let name = $state("");
-  let greetMsg = $state("");
+  let users = $state<UserData[]>([]);
 
-  async function greet(event: Event) {
-    event.preventDefault();
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    greetMsg = await invoke("greet", { name });
-  }
+  onMount(async () => {
+    users = await commands.getAllUsers();
+  });
+
 </script>
 
 <main class="container">
   <h1>Welcome to Tauri + Svelte</h1>
 
-  <div class="row">
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo vite" alt="Vite Logo" />
-    </a>
-    <a href="https://tauri.app" target="_blank">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-    <a href="https://kit.svelte.dev" target="_blank">
-      <img src="/svelte.svg" class="logo svelte-kit" alt="SvelteKit Logo" />
-    </a>
-  </div>
-  <p>Click on the Tauri, Vite, and SvelteKit logos to learn more.</p>
+  <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Email</th>
+          <th>Display Name</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each users as user (user.id)}
+          <tr>
+            <td>{user.id}</td>
+            <td>{user.email}</td>
+            <td>{user.display_name}</td>
+            <td>{user.created_at}</td>
+          </tr>
+        {/each}
+      </tbody>
+  </table>
 
-  <form class="row" onsubmit={greet}>
-    <input id="greet-input" placeholder="Enter a name..." bind:value={name} />
-    <button type="submit">Greet</button>
-  </form>
-  <p>{greetMsg}</p>
 </main>
 
 <style>
