@@ -110,7 +110,7 @@ fn get_notes(user_id: i32) -> Vec<dto::NoteDetail> {
     let conn = &mut establish_connection();
 
     let fetched_notes: Vec<Note> = notes::table
-        .filter(notes::id.eq(user_id))
+        .filter(notes::user_id.eq(user_id))
         .order_by(notes::created_at.desc())
         .load::<Note>(conn)
         .unwrap();

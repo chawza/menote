@@ -1,134 +1,138 @@
 <script lang="ts">
-  import { commands, type UserData} from "../bindings";
-    import { onMount } from "svelte";
+  import { commands, type NoteDetail } from "../bindings";
+  import { onMount } from "svelte";
 
-  let users = $state<UserData[]>([]);
+  let notes = $state<NoteDetail[]>([]);
 
   onMount(async () => {
-    users = await commands.getAllUsers();
+    notes = await commands.getNotes(1); // TODO: auth
   });
 
+  const formatLocal = (ts: number) => {
+    // If timestamp is in seconds, multiply by 1000 for JS Date
+    const date = new Date(ts * 1000);
+    return date.toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  };
 </script>
 
 <main class="container">
-  <h1>Welcome to Tauri + Svelte</h1>
+  <h1>Welcome to Menote!</h1>
 
   <table>
-      <thead>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th class="user-table--head">Content</th>
+        <th class="user-table--head">Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each notes as note (note.id)}
         <tr>
-          <th>ID</th>
-          <th class="user-table--head">Email</th>
-          <th class="user-table--head">Name</th>
-          <th>Created At</th>
+          <td>{note.id}</td>
+          <td class="user-table--head">{note.content}</td>
+          <td>{formatLocal(note.created_at)}</td>
         </tr>
-      </thead>
-      <tbody>
-        {#each users as user (user.id)}
-          <tr>
-            <td>{user.id}</td>
-            <td class="user-table--head">{user.email}</td>
-            <td class="user-table--head">{user.display_name}</td>
-            <td>{user.created_at}</td>
-          </tr>
-        {/each}
-      </tbody>
+      {/each}
+    </tbody>
   </table>
-
 </main>
 
 <style>
-.user-table--head {
+  .user-table--head {
     text-align: left;
-}
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
-}
-
-.logo.svelte-kit:hover {
-  filter: drop-shadow(0 0 2em #ff3e00);
-}
-
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
-
-  color: #0f0f0f;
-  background-color: #f6f6f6;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-.container {
-  margin: 0;
-  padding-top: 10vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-}
-h1 {
-  text-align: center;
-}
-
-input,
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  color: #0f0f0f;
-  background-color: #ffffff;
-  transition: border-color 0.25s;
-  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
-}
-
-button {
-  cursor: pointer;
-}
-
-button:hover {
-  border-color: #396cd8;
-}
-button:active {
-  border-color: #396cd8;
-  background-color: #e8e8e8;
-}
-
-input,
-button {
-  outline: none;
-}
-
-#greet-input {
-  margin-right: 5px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+  }
+  .logo.vite:hover {
+    filter: drop-shadow(0 0 2em #747bff);
   }
 
-  a:hover {
-    color: #24c8db;
+  .logo.svelte-kit:hover {
+    filter: drop-shadow(0 0 2em #ff3e00);
+  }
+
+  :root {
+    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+
+    color: #0f0f0f;
+    background-color: #f6f6f6;
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  .container {
+    margin: 0;
+    padding-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+  h1 {
+    text-align: center;
   }
 
   input,
   button {
-    color: #ffffff;
-    background-color: #0f0f0f98;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    color: #0f0f0f;
+    background-color: #ffffff;
+    transition: border-color 0.25s;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:hover {
+    border-color: #396cd8;
   }
   button:active {
-    background-color: #0f0f0f69;
+    border-color: #396cd8;
+    background-color: #e8e8e8;
   }
-}
 
+  input,
+  button {
+    outline: none;
+  }
+
+  #greet-input {
+    margin-right: 5px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color: #f6f6f6;
+      background-color: #2f2f2f;
+    }
+
+    a:hover {
+      color: #24c8db;
+    }
+
+    input,
+    button {
+      color: #ffffff;
+      background-color: #0f0f0f98;
+    }
+    button:active {
+      background-color: #0f0f0f69;
+    }
+  }
 </style>
