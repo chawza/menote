@@ -17,8 +17,8 @@
       <thead>
         <tr>
           <th>ID</th>
-          <th>Email</th>
-          <th>Display Name</th>
+          <th class="user-table--head">Email</th>
+          <th class="user-table--head">Name</th>
           <th>Created At</th>
         </tr>
       </thead>
@@ -26,8 +26,8 @@
         {#each users as user (user.id)}
           <tr>
             <td>{user.id}</td>
-            <td>{user.email}</td>
-            <td>{user.display_name}</td>
+            <td class="user-table--head">{user.email}</td>
+            <td class="user-table--head">{user.display_name}</td>
             <td>{user.created_at}</td>
           </tr>
         {/each}
@@ -37,6 +37,9 @@
 </main>
 
 <style>
+.user-table--head {
+    text-align: left;
+}
 .logo.vite:hover {
   filter: drop-shadow(0 0 2em #747bff);
 }
@@ -69,33 +72,6 @@
   justify-content: center;
   text-align: center;
 }
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
-}
-
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
-}
-
-.row {
-  display: flex;
-  justify-content: center;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
 h1 {
   text-align: center;
 }
