@@ -19,7 +19,7 @@ fn greet(name: &str) -> String {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![greet, get_all_users])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -33,7 +33,7 @@ pub fn establish_connection() -> SqliteConnection {
 
 #[specta::specta]
 #[tauri::command]
-pub fn get_all_users() -> Vec<dto::UserData> {
+fn get_all_users() -> Vec<dto::UserData> {
     use crate::models::User;
 
     use self::schema::users::dsl::*;
