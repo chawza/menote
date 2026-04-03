@@ -9,3 +9,15 @@ pub struct User {
     pub display_name: String,
     pub created_at: i32,
 }
+
+
+#[derive(Queryable, Selectable, QueryableByName)]
+#[diesel(table_name = crate::schema::notes)]
+#[diesel(check_for_backend(diesel::sqlite::Sqlite))]
+pub struct Notes {
+    pub id: Option<i32>,
+    pub user_id: i32,
+    pub content: Option<String>,
+    pub created_at: i32,
+    pub updated_at: i32,
+}
