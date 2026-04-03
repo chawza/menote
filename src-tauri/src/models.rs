@@ -10,11 +10,10 @@ pub struct User {
     pub created_at: i32,
 }
 
-
 #[derive(Queryable, Selectable, QueryableByName)]
 #[diesel(table_name = crate::schema::notes)]
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
-pub struct Notes {
+pub struct Note {
     pub id: Option<i32>,
     pub user_id: i32,
     pub content: Option<String>,

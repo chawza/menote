@@ -1,19 +1,26 @@
+use std::env;
+
 use diesel::prelude::*;
 use dotenv::dotenv;
-use tauri_specta::{Builder, collect_commands};
-use std::env;
 use specta_typescript::Typescript;
+use tauri_specta::{collect_commands, Builder};
 
-use crate::dto::UserData;
+use crate::{
+    dto::{NewNote, NoteDetail, UserData},
+    models::Note,
+};
 
-
+pub mod dto;
 pub mod models;
 pub mod schema;
-pub mod dto;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![get_all_users]);
+    let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![
+        get_all_users,
+        get_notes,
+        create_note
+    ]);
 
     #[cfg(debug_assertions)]
     specta_builder
@@ -26,7 +33,6 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
@@ -41,12 +47,61 @@ fn get_all_users() -> Vec<dto::UserData> {
 
     use self::schema::users::dsl::*;
     let conn = &mut establish_connection();
-    let fetched = users.select(User::as_select()).load(conn).expect("connection error");
-    let results = fetched.into_iter().map(|user| UserData {
-        id: user.id.expect("user id expected from database"),
-        email: user.email,
-        display_name: user.display_name,
-        created_at: user.created_at,
-    }).collect();
+    let fetched = users
+        .select(User::as_select())
+        .load(conn)
+        .expect("connection error");
+    let results = fetched
+        .into_iter()
+        .map(|user| UserData {
+            id: user.id.expect("user id expected from database"),
+            email: user.email,
+            display_name: user.display_name,
+            created_at: user.created_at,
+        })
+        .collect();
     results
+}
+
+#[specta::specta]
+#[tauri::command]
+fn create_note(note: NewNote) -> dto::NoteDetail {
+    use crate::schema::notes::dsl::*;
+    use diesel::insert_into;
+
+    let conn = &mut establish_connection();
+    let created_note: Note = insert_into(notes).values(&note).get_result(conn).unwrap();
+
+    NoteDetail {
+        id: created_note.id.unwrap(),
+        user_id: created_note.user_id,
+        content: created_note.content,
+        created_at: created_note.created_at,
+        updated_at: created_note.updated_at,
+    }
+}
+
+#[specta::specta]
+#[tauri::command]
+fn get_notes(user_id: i32) -> Vec<dto::NoteDetail> {
+    use crate::schema::notes;
+
+    let conn = &mut establish_connection();
+
+    let fetched_notes: Vec<Note> = notes::table
+        .filter(notes::id.eq(user_id))
+        .order_by(notes::created_at.desc())
+        .load::<Note>(conn)
+        .unwrap();
+
+    fetched_notes
+        .iter()
+        .map(|note| NoteDetail {
+            id: note.id.unwrap(),
+            user_id: note.user_id,
+            content: note.content.clone(),
+            created_at: note.created_at,
+            updated_at: note.updated_at,
+        })
+        .collect()
 }
