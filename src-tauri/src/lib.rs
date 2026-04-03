@@ -1,6 +1,7 @@
 use std::env;
 
 use diesel::prelude::*;
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use dotenv::dotenv;
 use specta_typescript::Typescript;
 use tauri_specta::{collect_commands, Builder};
@@ -13,6 +14,8 @@ use crate::{
 pub mod dto;
 pub mod models;
 pub mod schema;
+
+pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -30,6 +33,10 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(specta_builder.invoke_handler())
+        .setup(|app| {
+            setup_data_base(app);
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -38,6 +45,20 @@ pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     SqliteConnection::establish(&database_url).expect("Failed to connect to database")
+}
+
+fn setup_data_base(app: &tauri::App) {
+    use tauri::Manager;
+    let app_dir = app.path().app_data_dir().unwrap();
+    std::fs::create_dir_all(&app_dir).expect("Failed to create app data dir");
+
+    let db_path = app_dir.join("menote.sqlite");
+    println!("db path: {}", db_path.display());
+
+    env::set_var("DATABASE_URL", &db_path);
+
+    let mut conn = establish_connection();
+    conn.run_pending_migrations(MIGRATIONS).expect("Failed to run migrations");
 }
 
 #[specta::specta]

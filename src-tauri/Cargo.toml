@@ -28,3 +28,4 @@ dotenv = "0.15"
 specta = { version = "2.0.0-rc.24", features = ["derive"] }
 tauri-specta = { version = "2.0.0-rc.24", features = ["typescript", "derive"] }
 specta-typescript = "0.0.11"
+diesel_migrations = { version = "2.3.1", features = ["sqlite"] }
