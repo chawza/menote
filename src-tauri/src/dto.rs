@@ -9,7 +9,7 @@ pub struct UserData {
     pub id: i32,
     pub email: String,
     pub display_name: String,
-    pub created_at: i32,
+    pub created_at: i64,
 }
 
 #[derive(Serialize, Deserialize, Type, Insertable)]
@@ -17,8 +17,8 @@ pub struct UserData {
 pub struct NewNote {
     pub user_id: i32,
     pub content: String,
-    pub created_at: i32,
-    pub updated_at: i32,
+    pub created_at: i64,
+    pub updated_at: i64,
 }
 
 #[derive(Serialize, Deserialize, Type)]
@@ -26,6 +26,6 @@ pub struct NoteDetail {
     pub id: i32,
     pub user_id: i32,
     pub content: Option<String>,
-    pub created_at: i32,
-    pub updated_at: i32,
+    pub created_at: i64,
+    pub updated_at: i64,
 }

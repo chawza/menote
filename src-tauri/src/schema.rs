@@ -5,8 +5,8 @@ diesel::table! {
         id -> Nullable<Integer>,
         user_id -> Integer,
         content -> Nullable<Text>,
-        created_at -> Integer,
-        updated_at -> Integer,
+        created_at -> BigInt,
+        updated_at -> BigInt,
     }
 }
 
@@ -15,7 +15,7 @@ diesel::table! {
         id -> Nullable<Integer>,
         email -> Text,
         display_name -> Text,
-        created_at -> Integer,
+        created_at -> BigInt,
     }
 }
 

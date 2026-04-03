@@ -20,6 +20,9 @@
 
 <main class="container">
   <h1>Welcome to Menote!</h1>
+  <div>
+    <a href="/notes/create">New</a>
+  </div>
 
   <table>
     <thead>
