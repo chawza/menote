@@ -1,4 +1,4 @@
-use diesel::prelude::Insertable;
+use diesel::prelude::{AsChangeset, Insertable};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -27,5 +27,13 @@ pub struct NoteDetail {
     pub user_id: i32,
     pub content: Option<String>,
     pub created_at: i64,
+    pub updated_at: i64,
+}
+
+#[derive(Serialize, Deserialize, Type, AsChangeset)]
+#[diesel(table_name = notes)]
+pub struct UpdateNote {
+    pub id: i32,
+    pub content: String,
     pub updated_at: i64,
 }

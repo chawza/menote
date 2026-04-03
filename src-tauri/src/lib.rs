@@ -7,7 +7,7 @@ use specta_typescript::Typescript;
 use tauri_specta::{collect_commands, Builder};
 
 use crate::{
-    dto::{NewNote, NoteDetail, UserData},
+    dto::{NewNote, NoteDetail, UpdateNote, UserData},
     models::Note,
 };
 
@@ -22,7 +22,8 @@ pub fn run() {
     let specta_builder = Builder::<tauri::Wry>::new().commands(collect_commands![
         get_all_users,
         get_notes,
-        create_note
+        create_note,
+        update_note,
     ]);
 
     #[cfg(debug_assertions)]
@@ -64,9 +65,9 @@ fn setup_data_base(app: &tauri::App) {
 #[specta::specta]
 #[tauri::command]
 fn get_all_users() -> Vec<dto::UserData> {
+    use self::schema::users::dsl::*;
     use crate::models::User;
 
-    use self::schema::users::dsl::*;
     let conn = &mut establish_connection();
     let fetched = users
         .select(User::as_select())
@@ -100,6 +101,27 @@ fn create_note(note: NewNote) -> dto::NoteDetail {
         created_at: created_note.created_at,
         updated_at: created_note.updated_at,
     }
+}
+
+fn get_note_by_id(note_id: i32, conn: &mut SqliteConnection) -> Option<NoteDetail> {
+    use crate::schema::notes;
+    let note = notes::table.filter(notes::id.eq(note_id)).first::<Note>(conn).ok();
+    note.map(|note| NoteDetail {
+        id: note.id.unwrap(),
+        user_id: note.user_id,
+        content: note.content,
+        created_at: note.created_at,
+        updated_at: note.updated_at,
+    })
+}
+
+#[specta::specta]
+#[tauri::command]
+fn update_note(note: UpdateNote) -> dto::NoteDetail {
+    use crate::schema::notes::dsl::*;
+    let conn = &mut establish_connection();
+    diesel::update(notes).set(&note).execute(conn);
+    get_note_by_id(note.id, conn).unwrap()
 }
 
 #[specta::specta]
