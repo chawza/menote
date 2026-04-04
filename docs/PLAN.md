@@ -1,15 +1,37 @@
 # MeNote - Project Plan
 
 ## Overview
-A markdown note-taking desktop app. Single-user, local-first, built with Tauri + SvelteKit + SQLite.
+A markdown note-taking desktop app. Multi-user on one device, local-first, built with Tauri + SvelteKit + SQLite. Authentication is password-only (no username/email). Users switch by clicking profile icon.
 
 ## Tech Stack
 - **Frontend**: SvelteKit + TypeScript + Vite
 - **Backend**: Tauri (Rust) + SQLite + Diesel ORM
 - **Bridge**: tauri-specta for TypeScript type generation from Rust types
-- **Single user**: One user at a time. Simple password lock (no email, no signup).
+- **Multi-user**: Multiple users on one device. Password-only auth per user (future biometrics). No email/username.
 
 ---
+
+## Phase 0: Codebase Refactoring & Foundation
+
+- [ ] [chore] Create global CSS file (`src/app.css` or `src/global.css`) for shared styles
+- [ ] [chore] Extract CSS variables (colors, spacing, typography) to global CSS
+- [ ] [chore] Remove inline styles and component-scoped `&:style` blocks where possible
+- [ ] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
+- [ ] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
+- [ ] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
+- [ ] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
+- [ ] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
+- [ ] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
+- [ ] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
+- [ ] [chore] Create consistent component props interface pattern
+- [ ] [chore] Add ESLint configuration if not present
+- [ ] [chore] Add Prettier configuration for code formatting
+- [ ] [chore] Configure .editorconfig for consistent editor settings
+- [ ] [chore] Add VS Code workspace settings (extensions, formatter)
+- [ ] [chore] Refactor Rust backend: separate concerns into modules (auth, notes, tags)
+- [ ] [chore] Extract Rust error handling to more detailed error types
+- [ ] [chore] Add Rust code documentation (doc comments on public APIs)
+- [ ] [chore] Create consistent naming convention for Tauri commands (e.g., `user_*.rs`, `note_*.rs`)
 
 ## Phase 1: Fix Critical Bugs & Foundation
 - [ ] [bug] Fix missing foreign key constraint on `notes.user_id`
@@ -18,10 +40,9 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
 - [ ] [security] Add ownership checks on update/delete commands (verify note belongs to current user)
 - [ ] [data] Add database indexes (user_id, created_at) for query performance
 - [ ] [infra] Remove unused `ts-rs` dependency from Cargo.toml
-- [ ] [bug] Fix `get_all_users` command — should not exist (single user app)
-- [ ] [feat] add pagination on notes index
+- [ ] [feat] Add pagination on notes index
 
-## Phase 2: Simplify to Single User + Password Lock
+## Phase 2: Multi-User Password-Only Auth
 
 - [ ] [feat] Simplify User model — remove email, keep only `id`, `display_name`, `password_hash`, `created_at`
 - [ ] [data] Create migration to alter users table (drop email unique, add password_hash if missing)
@@ -29,14 +50,21 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
   - [ ] [security] Add `argon2` or `bcrypt` crate dependency
   - [ ] [feat] Implement `set_password` Tauri command (hash + store)
   - [ ] [feat] Implement `verify_password` Tauri command
-- [ ] [feat] Add `get_current_user` Tauri command
-- [ ] [feat] Add `setup_user` Tauri command (first-run: create user with display_name + password)
-- [ ] [feat] App state: track if user is unlocked in Rust (in-memory, not persisted)
-- [ ] [security] All note commands require unlocked session (return error if locked)
-- [ ] [ux] First-run flow: welcome screen → set display name → set password
-- [ ] [ux] Lock screen: password input to unlock app
-- [ ] [ux] Auto-lock after configurable idle timeout
-- [ ] [ux] "Lock app" button in app header
+- [ ] [feat] Add `get_all_users` Tauri command (list all users with display_name only, no password_hash)
+- [ ] [feat] Add `get_user_by_id` Tauri command
+- [ ] [feat] Add `create_user` Tauri command (first-run: create user with display_name + password)
+- [ ] [feat] Add `delete_user` Tauri command (cascade delete user's notes)
+- [ ] [feat] App state: track active user session in Rust (in-memory, not persisted)
+- [ ] [security] All note commands require active user session (return error if no session)
+- [ ] [security] Add session token or user_id tracking in Rust app state
+- [ ] [ux] First-run flow: welcome screen → create first user (display_name + password)
+- [ ] [ux] Profile icon in app header (shows current user's avatar/initials)
+- [ ] [ux] Click profile icon → user switcher modal (list all users with lock/unlock indicators)
+- [ ] [ux] User switcher: shows existing users, click to unlock via password
+- [ ] [ux] User switcher: "Add new user" button to create additional users
+- [ ] [ux] User switcher: "Delete user" option (with confirmation, cascades to notes)
+- [ ] [ux] Lock user: click lock icon or press Ctrl/Cmd+L to lock current user
+- [ ] [ux] Auto-lock user after configurable idle timeout
 - [ ] [desktop] Persist app window state (size, position) across sessions
 - [ ] [desktop/macOS] Support Touch ID as unlock method (fallback to password)
 - [ ] [desktop/windows] Support Windows Hello as unlock method
@@ -73,7 +101,10 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
 ## Phase 5: UX Polish & App Shell
 
 - [ ] [feat] Create `+layout.svelte` — shared app shell with header, sidebar, content area
-- [ ] [ux] Move global CSS variables to `+layout.svelte` or `app.css`
+- [ ] [chore] Extract shared layout components (Header, Sidebar, Navigation) to `src/lib/components/layout/`
+- [ ] [chore] Consolidate route-specific CSS to route-scoped styles
+- [ ] [chore] Extract animation/transition utilities to `src/lib/utils/transitions.ts`
+- [ ] [chore] Extract keyboard shortcut handler to `src/lib/utils/keyboard.ts`
 - [ ] [ux] Add loading spinner/skeleton for initial data fetch
 - [ ] [ux] Add empty state illustration when no notes exist
 - [ ] [ux] Smooth transitions between note list, view, and edit states
@@ -129,7 +160,7 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
   - [ ] [feat] Utility tests for tryCommand wrapper
 - [ ] [infra] Add E2E test framework (Playwright or Tauri WebDriver)
   - [ ] [feat] E2E test: create, edit, delete note flow
-  - [ ] [feat] E2E test: lock/unlock flow
+  - [ ] [feat] E2E test: create user, switch user, lock/unlock user flow
 - [ ] [infra] CI pipeline (GitHub Actions)
   - [ ] [feat] Run `cargo clippy` + `cargo fmt --check` + `cargo test`
   - [ ] [feat] Run `yarn check` (Svelte type checking)
@@ -150,10 +181,16 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
 
 ## Phase 11: Performance & Polish
 
+- [ ] [chore] Optimize bundle size (code splitting, lazy loading routes)
+- [ ] [chore] Audit and remove unused dependencies
+- [ ] [chore] Consolidate duplicate utility functions across the codebase
+- [ ] [chore] Extract theme logic to dedicated `src/lib/stores/theme.ts` store
+- [ ] [chore] Extract user session logic to `src/lib/stores/session.ts` store
 - [ ] [perf] Database connection pooling (r2d2-diesel or similar)
 - [ ] [perf] Virtual scrolling for large note lists
 - [ ] [perf] Lazy load note content (paginate get_notes)
 - [ ] [perf] Debounce tag extraction on note save
+- [ ] [perf] Memoize expensive computations in Svelte components
 - [ ] [ux] Dark/light theme toggle (persist preference)
 - [ ] [ux] Custom app title bar (frameless window)
 - [ ] [ux] System tray support (quick note creation)
