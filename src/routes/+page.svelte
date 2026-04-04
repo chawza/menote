@@ -9,9 +9,12 @@
   let isDrawerOpen = $state(false);
   let contentForm = $state("");
   let isUpdating = $state(false);
+  let isCreateModalOpen = $state(false);
+  let newNoteContent = $state("");
+  let isCreating = $state(false);
 
   onMount(async () => {
-    notes = await commands.getNotes(1);
+    notes = (await commands.getNotes(1)).sort((a, b) => b.created_at - a.created_at);
   });
 
   const formatLocal = (ts: number) => {
@@ -61,13 +64,46 @@
       }
     });
   }
+
+  async function handleCreateNote() {
+    if (!newNoteContent.trim()) {
+      toastStore.error("Please enter some content");
+      return;
+    }
+    isCreating = true;
+    const now = Math.round(Date.now() / 1000);
+    try {
+      const newNote = await commands.createNote({
+        user_id: 1,
+        content: newNoteContent,
+        created_at: now,
+        updated_at: now
+      })
+      notes = [...notes, newNote].sort((a, b) => b.created_at - a.created_at);
+      toastStore.success('Note created successfully!');
+      closeCreateModal();
+    } catch (e) {
+      console.error(e);
+      toastStore.error("Failed to create note");
+    } finally {
+      isCreating = false;
+    }
+  }
+
+  function openCreateModal() {
+    isCreateModalOpen = true;
+  }
+
+  function closeCreateModal() {
+    isCreateModalOpen = false;
+    newNoteContent = "";
+  }
 </script>
 
 <main class="main">
   <div class="main__container">
     <header class="main__header">
       <h1 class="main__title">MeNote</h1>
-      <a href="/notes/create" class="main__new-btn">+ New Note</a>
     </header>
 
     <div class="notes">
@@ -117,6 +153,45 @@
         </button>
       </div>
     {/if}
+  </div>
+
+  <button
+    class="create-note-fab"
+    onclick={openCreateModal}
+    aria-label="Create new note"
+  >
+    +
+  </button>
+
+  <div
+    class="modal-overlay"
+    class:modal-overlay--open={isCreateModalOpen}
+    onclick={closeCreateModal}
+    onkeydown={(e) => e.key === 'Escape' && closeCreateModal()}
+    role="button"
+    tabindex="-1"
+  ></div>
+
+  <div class="modal" class:modal--open={isCreateModalOpen}>
+    <div class="modal__header">
+      <h2 class="modal__title">New Note</h2>
+      <button class="modal__close" onclick={closeCreateModal}>×</button>
+    </div>
+
+    <div class="modal__form">
+      <textarea
+        class="modal__textarea"
+        bind:value={newNoteContent}
+        placeholder="Write your note here..."
+      ></textarea>
+      <button
+        class="modal__submit"
+        onclick={handleCreateNote}
+        disabled={isCreating}
+      >
+        {isCreating ? "Creating..." : "Create"}
+      </button>
+    </div>
   </div>
 </main>
 
@@ -183,20 +258,6 @@
   .main__title {
     font-size: 1.75rem;
     font-weight: 600;
-  }
-
-  .main__new-btn {
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.2s ease;
-  }
-
-  .main__new-btn:hover {
-    background-color: var(--color-accent-hover);
   }
 
   .notes {
@@ -401,5 +462,185 @@
   .drawer__submit:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+  }
+
+  .create-note-fab {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    font-size: 2rem;
+    font-weight: 300;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .create-note-fab:hover {
+    background-color: var(--color-accent-hover);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .create-note-fab:active {
+    transform: scale(0.95);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 40;
+  }
+
+  .modal-overlay--open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background-color: var(--color-surface);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    max-width: 500px;
+    width: 90%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+    z-index: 50;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+
+  .modal--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal__title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text);
+  }
+
+  .modal__close {
+    background: none;
+    border: none;
+    font-size: 1.75rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+
+  .modal__close:hover {
+    color: var(--color-text);
+  }
+
+  .modal__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .modal__textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: vertical;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: border-color 0.2s ease;
+  }
+
+  .modal__textarea:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(196, 167, 125, 0.2);
+  }
+
+  .modal__textarea::placeholder {
+    color: var(--color-text-muted);
+  }
+
+  .modal__submit {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    padding: 0.875rem 1.5rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .modal__submit:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
+
+  .modal__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .modal {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .create-note-fab {
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 48px;
+      height: 48px;
+      font-size: 1.75rem;
+    }
+
+    .modal {
+      width: 95%;
+      padding: 1.25rem;
+    }
+
+    .modal__title {
+      font-size: 1.25rem;
+    }
+
+    .modal__textarea {
+      min-height: 150px;
+      font-size: 0.875rem;
+    }
   }
 </style>
