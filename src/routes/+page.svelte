@@ -3,143 +3,331 @@
   import { onMount } from "svelte";
 
   let notes = $state<NoteDetail[]>([]);
-
   let selectedNote = $state<NoteDetail | null>(null);
-  let isUpdating = $state(false);
+  let isDrawerOpen = $state(false);
   let contentForm = $state("");
-
-  async function updateNote(note: NoteDetail) {
-    isUpdating = true;
-    try {
-      await commands.updateNote({
-        content: contentForm,
-        id: note.id,
-        updated_at: Math.round(Date.now() / 1000)
-      });
-      selectedNote = null
-    }
-    finally {
-      isUpdating = false;
-    }
-  }
-
-  function selectNote(note: NoteDetail) {
-    selectedNote = note;
-    contentForm = note.content || '';
-  }
+  let isUpdating = $state(false);
 
   onMount(async () => {
-    notes = await commands.getNotes(1); // TODO: auth
+    notes = await commands.getNotes(1);
   });
 
   const formatLocal = (ts: number) => {
-    // If timestamp is in seconds, multiply by 1000 for JS Date
     const date = new Date(ts * 1000);
     return date.toLocaleString(undefined, {
       dateStyle: "medium",
       timeStyle: "short",
     });
   };
+
+  function openDrawer(note: NoteDetail) {
+    selectedNote = note;
+    contentForm = note.content || "";
+    isDrawerOpen = true;
+  }
+
+  function closeDrawer() {
+    isDrawerOpen = false;
+    selectedNote = null;
+  }
+
+  async function handleUpdate(note: NoteDetail) {
+    isUpdating = true;
+    try {
+      // TODO: Implement update logic
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      closeDrawer();
+    } finally {
+      isUpdating = false;
+    }
+  }
 </script>
 
-<main>
-  <div class="container">
-    <h1>Welcome to Menote!</h1>
-    <div>
-      <a href="/notes/create">New</a>
-    </div>
+<main class="main">
+  <div class="main__container">
+    <header class="main__header">
+      <h1 class="main__title">MeNote</h1>
+      <a href="/notes/create" class="main__new-btn">+ New Note</a>
+    </header>
 
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th class="user-table--head">Content</th>
-          <th class="user-table--head">Created</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each notes as note (note.id)}
-          <tr onclick={() => selectNote(note)}>
-            <td>{note.id}</td>
-            <td class="user-table--head">{note.content}</td>
-            <td>{formatLocal(note.created_at)}</td>
-          </tr>
-        {/each}
-      </tbody>
-    </table>
+    <div class="notes">
+      {#each notes as note (note.id)}
+        <div class="note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
+          <p class="note-card__content">{note.content}</p>
+          <div class="note-card__meta">
+            <span class="note-card__date">Created: {formatLocal(note.created_at)}</span>
+            <span class="note-card__date note-card__date--updated">Updated: {formatLocal(note.updated_at)}</span>
+          </div>
+        </div>
+      {/each}
+    </div>
   </div>
 
-  {#if selectedNote}
-  <div class="drawer">
-    <h2>Edit</h2>
-    <span>created: {formatLocal(selectedNote.created_at)}</span>
-    <span>updated: {formatLocal(selectedNote.updated_at)}</span>
+  <div class="drawer-overlay" class:drawer-overlay--open={isDrawerOpen} onclick={closeDrawer} onkeydown={(e) => e.key === 'Escape' && closeDrawer()} role="button" tabindex="-1"></div>
 
-    <div class="form">
-      <textarea bind:value={contentForm}></textarea>
-      <button type="button" onclick={() => selectedNote ? updateNote(selectedNote) : null} disabled={isUpdating}>Submit</button>
-    </div>
+  <div class="drawer" class:drawer--open={isDrawerOpen}>
+    <div class="drawer__handle"></div>
+    {#if selectedNote}
+      <div class="drawer__header">
+        <h2 class="drawer__title">Edit Note</h2>
+        <button class="drawer__close" onclick={closeDrawer}>×</button>
+      </div>
 
+      <div class="drawer__meta">
+        <span class="drawer__date">Created: {formatLocal(selectedNote.created_at)}</span>
+        <span class="drawer__date">Updated: {formatLocal(selectedNote.updated_at)}</span>
+      </div>
+
+      <div class="drawer__form">
+        <textarea class="drawer__textarea" bind:value={contentForm}></textarea>
+        <button
+          class="drawer__submit"
+          onclick={() => selectedNote && handleUpdate(selectedNote)}
+          disabled={isUpdating}
+        >
+          {isUpdating ? "Updating..." : "Update"}
+        </button>
+      </div>
+    {/if}
   </div>
-  {/if}
 </main>
 
 <style>
-  .user-table--head {
-    text-align: left;
-  }
-
   :root {
-    font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 24px;
-    font-weight: 400;
-
-    color: #0f0f0f;
-    background-color: #f6f6f6;
-
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-text-size-adjust: 100%;
-  }
-
-  main {
-      display: flex;
-      flex-direction: row;
-  }
-
-  .container {
-    margin: 0;
-    padding-top: 10vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .drawer {
-      max-width: 400px;
-  }
-
-  textarea {
-      min-width: 300px;
-      min-height: 200px;
-  }
-
-  h1 {
-    text-align: center;
+    --color-bg: #faf8f5;
+    --color-surface: #ffffff;
+    --color-text: #2d2a26;
+    --color-text-muted: #8a857d;
+    --color-border: #e8e4df;
+    --color-accent: #c4a77d;
+    --color-accent-hover: #b3976d;
+    --font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      color: #f6f6f6;
-      background-color: #2f2f2f;
+      --color-bg: #1a1816;
+      --color-surface: #252220;
+      --color-text: #f0ebe5;
+      --color-text-muted: #9a948c;
+      --color-border: #3a3632;
+      --color-accent: #d4b78d;
+      --color-accent-hover: #c4a77d;
     }
+  }
 
-    a:hover {
-      color: #24c8db;
-    }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .main {
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .main__container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .main__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .main__title {
+    font-size: 1.75rem;
+    font-weight: 600;
+  }
+
+  .main__new-btn {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+  }
+
+  .main__new-btn:hover {
+    background-color: var(--color-accent-hover);
+  }
+
+  .notes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .note-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+
+  .note-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .note-card__content {
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 0.75rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .note-card__meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .note-card__date {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .note-card__date--updated {
+    opacity: 0.7;
+  }
+
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 10;
+  }
+
+  .drawer-overlay--open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-surface);
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding: 1rem 1.5rem 2rem;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 20;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .drawer--open {
+    transform: translateY(0);
+  }
+
+  .drawer__handle {
+    width: 2.5rem;
+    height: 0.25rem;
+    background-color: var(--color-border);
+    border-radius: 0.125rem;
+    margin: 0 auto 1rem;
+  }
+
+  .drawer__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .drawer__title {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .drawer__close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+  }
+
+  .drawer__close:hover {
+    color: var(--color-text);
+  }
+
+  .drawer__meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .drawer__date {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .drawer__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .drawer__textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    font-family: inherit;
+    font-size: 0.875rem;
+    resize: vertical;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .drawer__textarea:focus {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .drawer__submit {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .drawer__submit:hover:not(:disabled) {
+    background-color: var(--color-accent-hover);
+  }
+
+  .drawer__submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 </style>
