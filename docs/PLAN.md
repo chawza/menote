@@ -12,8 +12,6 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
 ---
 
 ## Phase 1: Fix Critical Bugs & Foundation
-
-- [ ] [bug] Fix `update_note` — adds `.filter(id.eq(note.id))` to prevent updating ALL rows
 - [ ] [bug] Fix missing foreign key constraint on `notes.user_id`
 - [ ] [bug] Fix `content` column allowing NULL — add NOT NULL constraint
 - [ ] [data] Add migration to fix schema: foreign key, NOT NULL, CHECK(length <= 1000)
@@ -21,6 +19,7 @@ A markdown note-taking desktop app. Single-user, local-first, built with Tauri +
 - [ ] [data] Add database indexes (user_id, created_at) for query performance
 - [ ] [infra] Remove unused `ts-rs` dependency from Cargo.toml
 - [ ] [bug] Fix `get_all_users` command — should not exist (single user app)
+- [ ] [feat] add pagination on notes index
 
 ## Phase 2: Simplify to Single User + Password Lock
 
