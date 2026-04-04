@@ -28,7 +28,9 @@
 
   function closeDrawer() {
     isDrawerOpen = false;
-    selectedNote = null;
+    setTimeout(() => {
+      selectedNote = null;
+    }, 300);
   }
 
   async function handleUpdate(note: NoteDetail) {
@@ -234,6 +236,8 @@
     z-index: 20;
     max-height: 80vh;
     overflow-y: auto;
+    max-width: 800px;
+    margin: auto;
   }
 
   .drawer--open {
