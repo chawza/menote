@@ -1,6 +1,8 @@
 <script lang="ts">
   import { commands, type NoteDetail } from "../bindings";
   import { onMount } from "svelte";
+  import Modal from "../lib/components/Modal.svelte";
+  import ConfirmModal from "../lib/components/ConfirmModal.svelte";
   import ToastContainer from "../lib/components/ToastContainer.svelte";
   import { toastStore } from "../lib/stores/toast";
 
@@ -12,6 +14,8 @@
   let isCreateModalOpen = $state(false);
   let newNoteContent = $state("");
   let isCreating = $state(false);
+  let isDeleteModalOpen = $state(false);
+  let noteToDelete = $state<NoteDetail | null>(null);
 
   onMount(async () => {
     notes = (await commands.getNotes(1)).sort((a, b) => b.created_at - a.created_at);
@@ -55,14 +59,26 @@
   }
 
   function handleDelete(note: NoteDetail) {
-    const preview = (note.content || 'this note').substring(0, 20);
-    toastStore.warning(`Delete "${preview}..."?`, {
-      confirmText: 'Delete',
-      onConfirm: () => {
-        notes = notes.filter(n => n.id !== note.id);
-        toastStore.success('Note deleted');
-      }
-    });
+    noteToDelete = note;
+    isDeleteModalOpen = true;
+  }
+
+  function cancelDelete() {
+    isDeleteModalOpen = false;
+    noteToDelete = null;
+  }
+
+  async function confirmDelete() {
+    const note = noteToDelete;
+    if (!note) return;
+    try {
+      await commands.deleteNote(note.id);
+      notes = notes.filter(n => n.id !== note.id);
+      toastStore.success('Note deleted');
+    } catch (e) {
+      toastStore.error("Failed to delete note");
+    }
+    cancelDelete();
   }
 
   async function handleCreateNote() {
@@ -163,37 +179,41 @@
     +
   </button>
 
-  <div
-    class="modal-overlay"
-    class:modal-overlay--open={isCreateModalOpen}
-    onclick={closeCreateModal}
-    onkeydown={(e) => e.key === 'Escape' && closeCreateModal()}
-    role="button"
-    tabindex="-1"
-  ></div>
-
-  <div class="modal" class:modal--open={isCreateModalOpen}>
-    <div class="modal__header">
-      <h2 class="modal__title">New Note</h2>
-      <button class="modal__close" onclick={closeCreateModal}>×</button>
-    </div>
-
-    <div class="modal__form">
-      <textarea
-        class="modal__textarea"
-        bind:value={newNoteContent}
-        placeholder="Write your note here..."
-      ></textarea>
-      <button
-        class="modal__submit"
-        onclick={handleCreateNote}
-        disabled={isCreating}
-      >
-        {isCreating ? "Creating..." : "Create"}
-      </button>
-    </div>
-  </div>
+  <Modal isShow={isCreateModalOpen} onclose={closeCreateModal} title="New Note">
+    {#snippet children()}
+      <div class="create-form">
+        <textarea
+          class="create-form__textarea"
+          bind:value={newNoteContent}
+          placeholder="Write your note here..."
+        ></textarea>
+        <button
+          class="create-form__submit"
+          onclick={handleCreateNote}
+          disabled={isCreating}
+        >
+          {isCreating ? "Creating..." : "Create"}
+        </button>
+      </div>
+    {/snippet}
+  </Modal>
 </main>
+
+<ConfirmModal
+  isShow={isDeleteModalOpen}
+  onconfirm={confirmDelete}
+  oncancel={cancelDelete}
+  title="Delete Note"
+  confirmText="Delete"
+  cancelText="Cancel"
+>
+  {#snippet content()}
+    <p>Are you sure you want to delete this note?</p>
+    {#if noteToDelete}
+      <p class="delete-preview">"{(noteToDelete.content || 'this note').substring(0, 50)}..."</p>
+    {/if}
+  {/snippet}
+</ConfirmModal>
 
 <ToastContainer />
 
@@ -496,79 +516,13 @@
     transform: scale(0.95);
   }
 
-  .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
-    z-index: 40;
-  }
-
-  .modal-overlay--open {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background-color: var(--color-surface);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    max-width: 500px;
-    width: 90%;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-    z-index: 50;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  .modal--open {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .modal__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .modal__title {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--color-text);
-  }
-
-  .modal__close {
-    background: none;
-    border: none;
-    font-size: 1.75rem;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1;
-    transition: color 0.2s ease;
-  }
-
-  .modal__close:hover {
-    color: var(--color-text);
-  }
-
-  .modal__form {
+  .create-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
 
-  .modal__textarea {
+  .create-form__textarea {
     width: 100%;
     min-height: 200px;
     padding: 1rem;
@@ -583,17 +537,17 @@
     transition: border-color 0.2s ease;
   }
 
-  .modal__textarea:focus {
+  .create-form__textarea:focus {
     outline: none;
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px rgba(196, 167, 125, 0.2);
   }
 
-  .modal__textarea::placeholder {
+  .create-form__textarea::placeholder {
     color: var(--color-text-muted);
   }
 
-  .modal__submit {
+  .create-form__submit {
     background-color: var(--color-accent);
     color: var(--color-bg);
     border: none;
@@ -605,19 +559,20 @@
     transition: background-color 0.2s ease;
   }
 
-  .modal__submit:hover:not(:disabled) {
+  .create-form__submit:hover:not(:disabled) {
     background-color: var(--color-accent-hover);
   }
 
-  .modal__submit:disabled {
+  .create-form__submit:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
 
-  @media (prefers-color-scheme: dark) {
-    .modal {
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-    }
+  .delete-preview {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    font-style: italic;
   }
 
   @media (max-width: 640px) {
@@ -629,16 +584,7 @@
       font-size: 1.75rem;
     }
 
-    .modal {
-      width: 95%;
-      padding: 1.25rem;
-    }
-
-    .modal__title {
-      font-size: 1.25rem;
-    }
-
-    .modal__textarea {
+    .create-form__textarea {
       min-height: 150px;
       font-size: 0.875rem;
     }

@@ -1,6 +1,6 @@
 use std::env;
 
-use diesel::prelude::*;
+use diesel::{prelude::*, result::Error};
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use dotenv::dotenv;
 use specta_typescript::Typescript;
@@ -24,6 +24,7 @@ pub fn run() {
         get_notes,
         create_note,
         update_note,
+        delete_note,
     ]);
 
     #[cfg(debug_assertions)]
@@ -115,6 +116,12 @@ fn get_note_by_id(note_id: i32, conn: &mut SqliteConnection) -> Option<NoteDetai
     })
 }
 
+fn delete_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<usize, Error> {
+    use crate::schema::notes::dsl::*;
+    let result = diesel::delete(notes.filter(id.eq(note_id))).execute(conn);
+    result
+}
+
 #[specta::specta]
 #[tauri::command]
 fn update_note(note: UpdateNote) -> dto::NoteDetail {
@@ -122,6 +129,13 @@ fn update_note(note: UpdateNote) -> dto::NoteDetail {
     let conn = &mut establish_connection();
     diesel::update(notes).set(&note).execute(conn);
     get_note_by_id(note.id, conn).unwrap()
+}
+
+#[specta::specta]
+#[tauri::command]
+fn delete_note(note_id: i32) -> bool {
+    let conn = &mut establish_connection();
+    delete_by_id(note_id, conn).is_ok()
 }
 
 #[specta::specta]
