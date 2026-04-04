@@ -4,6 +4,30 @@
 
   let notes = $state<NoteDetail[]>([]);
 
+  let selectedNote = $state<NoteDetail | null>(null);
+  let isUpdating = $state(false);
+  let contentForm = $state("");
+
+  async function updateNote(note: NoteDetail) {
+    isUpdating = true;
+    try {
+      await commands.updateNote({
+        content: contentForm,
+        id: note.id,
+        updated_at: Math.round(Date.now() / 1000)
+      });
+      selectedNote = null
+    }
+    finally {
+      isUpdating = false;
+    }
+  }
+
+  function selectNote(note: NoteDetail) {
+    selectedNote = note;
+    contentForm = note.content || '';
+  }
+
   onMount(async () => {
     notes = await commands.getNotes(1); // TODO: auth
   });
@@ -18,30 +42,46 @@
   };
 </script>
 
-<main class="container">
-  <h1>Welcome to Menote!</h1>
-  <div>
-    <a href="/notes/create">New</a>
+<main>
+  <div class="container">
+    <h1>Welcome to Menote!</h1>
+    <div>
+      <a href="/notes/create">New</a>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th class="user-table--head">Content</th>
+          <th class="user-table--head">Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each notes as note (note.id)}
+          <tr onclick={() => selectNote(note)}>
+            <td>{note.id}</td>
+            <td class="user-table--head">{note.content}</td>
+            <td>{formatLocal(note.created_at)}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
   </div>
 
-  <table>
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th class="user-table--head">Content</th>
-        <th class="user-table--head">Created</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each notes as note (note.id)}
-        <tr>
-          <td>{note.id}</td>
-          <td class="user-table--head">{note.content}</td>
-          <td>{formatLocal(note.created_at)}</td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
+  {#if selectedNote}
+  <div class="drawer">
+    <h2>Edit</h2>
+    <span>created: {formatLocal(selectedNote.created_at)}</span>
+    <span>updated: {formatLocal(selectedNote.updated_at)}</span>
+
+    <div class="form">
+      <textarea bind:value={contentForm}></textarea>
+      <button type="button" onclick={() => selectedNote ? updateNote(selectedNote) : null} disabled={isUpdating}>Submit</button>
+    </div>
+
+  </div>
+  {/if}
 </main>
 
 <style>
@@ -65,6 +105,11 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  main {
+      display: flex;
+      flex-direction: row;
+  }
+
   .container {
     margin: 0;
     padding-top: 10vh;
@@ -73,9 +118,20 @@
     justify-content: center;
     text-align: center;
   }
+
+  .drawer {
+      max-width: 400px;
+  }
+
+  textarea {
+      min-width: 300px;
+      min-height: 200px;
+  }
+
   h1 {
     text-align: center;
   }
+
   @media (prefers-color-scheme: dark) {
     :root {
       color: #f6f6f6;
