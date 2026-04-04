@@ -55,9 +55,16 @@
     <div class="notes">
       {#each notes as note (note.id)}
         <div class="note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
-          <p class="note-card__content">{note.content}</p>
+          <div class="note-card__body">
+            <p class="note-card__content">{note.content}</p>
+            <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); /* TODO: implement delete */ }} aria-label="Delete note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
+              </svg>
+            </button>
+          </div>
           <div class="note-card__meta">
-            <span class="note-card__date">Created: {formatLocal(note.created_at)}</span>
+            <span class="note-card__date">{formatLocal(note.created_at)}</span>
             <span class="note-card__date note-card__date--updated">Updated: {formatLocal(note.updated_at)}</span>
           </div>
         </div>
@@ -183,14 +190,41 @@
     transform: translateY(-2px);
   }
 
+  .note-card__body {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
   .note-card__content {
     font-size: 1rem;
     line-height: 1.5;
-    margin-bottom: 0.75rem;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
+    flex: 1;
+  }
+
+  .note-card__delete {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    opacity: 0;
+    transition: opacity 0.2s ease, color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .note-card:hover .note-card__delete {
+    opacity: 1;
+  }
+
+  .note-card__delete:hover {
+    color: #dc3545;
   }
 
   .note-card__meta {
@@ -205,6 +239,11 @@
   }
 
   .note-card__date--updated {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .note-card:hover .note-card__date--updated {
     opacity: 0.7;
   }
 
