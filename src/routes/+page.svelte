@@ -1,6 +1,8 @@
 <script lang="ts">
   import { commands, type NoteDetail } from "../bindings";
   import { onMount } from "svelte";
+  import ToastContainer from "../lib/components/ToastContainer.svelte";
+  import { toastStore } from "../lib/stores/toast";
 
   let notes = $state<NoteDetail[]>([]);
   let selectedNote = $state<NoteDetail | null>(null);
@@ -41,12 +43,23 @@
         content: contentForm,
         updated_at: Math.floor(Date.now() / 1000),
       })
-      // update in
       notes = notes.map(n => n.id === updatedNote.id ? updatedNote : n);
+      toastStore.success('Note updated successfully!');
       closeDrawer();
     } finally {
       isUpdating = false;
     }
+  }
+
+  function handleDelete(note: NoteDetail) {
+    const preview = (note.content || 'this note').substring(0, 20);
+    toastStore.warning(`Delete "${preview}..."?`, {
+      confirmText: 'Delete',
+      onConfirm: () => {
+        notes = notes.filter(n => n.id !== note.id);
+        toastStore.success('Note deleted');
+      }
+    });
   }
 </script>
 
@@ -58,11 +71,12 @@
     </header>
 
     <div class="notes">
-      {#each notes as note (note.id, note.updated_at)}
+      <!-- add unique note by note.id and updated_at also -->
+      {#each notes as note (note.id)}
         <div class="note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
           <div class="note-card__body">
             <p class="note-card__content">{note.content}</p>
-            <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); /* TODO: implement delete */ }} aria-label="Delete note">
+            <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); handleDelete(note); }} aria-label="Delete note">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
               </svg>
@@ -106,6 +120,8 @@
   </div>
 </main>
 
+<ToastContainer />
+
 <style>
   :root {
     --color-bg: #faf8f5;
@@ -115,6 +131,10 @@
     --color-border: #e8e4df;
     --color-accent: #c4a77d;
     --color-accent-hover: #b3976d;
+    --toast-success: #7d9f7d;
+    --toast-info: #7d9fc4;
+    --toast-warning: #c4a77d;
+    --toast-error: #c47d7d;
     --font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   }
 
@@ -127,6 +147,10 @@
       --color-border: #3a3632;
       --color-accent: #d4b78d;
       --color-accent-hover: #c4a77d;
+      --toast-success: #8fb08f;
+      --toast-info: #8fb0d4;
+      --toast-warning: #d4b78d;
+      --toast-error: #d48f8f;
     }
   }
 
