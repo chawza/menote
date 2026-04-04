@@ -36,8 +36,13 @@
   async function handleUpdate(note: NoteDetail) {
     isUpdating = true;
     try {
-      // TODO: Implement update logic
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const updatedNote = await commands.updateNote({
+        id: note.id,
+        content: contentForm,
+        updated_at: Math.floor(Date.now() / 1000),
+      })
+      // update in
+      notes = notes.map(n => n.id === updatedNote.id ? updatedNote : n);
       closeDrawer();
     } finally {
       isUpdating = false;
@@ -53,7 +58,7 @@
     </header>
 
     <div class="notes">
-      {#each notes as note (note.id)}
+      {#each notes as note (note.id, note.updated_at)}
         <div class="note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
           <div class="note-card__body">
             <p class="note-card__content">{note.content}</p>
