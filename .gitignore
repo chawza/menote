@@ -6,3 +6,4 @@ src/bindings.ts
 
 *storybook.log
 storybook-static
+.DS_Store
