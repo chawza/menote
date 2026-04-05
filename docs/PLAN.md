@@ -17,21 +17,36 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 - [x] [chore] Extract CSS variables (colors, spacing, typography) to global CSS
 - [x] [chore] Remove inline styles and component-scoped `&:style` blocks where possible
 - [x] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
-- [ ] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
-- [ ] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
-- [ ] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
-- [ ] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
-- [ ] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
-- [ ] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
-- [ ] [chore] Create consistent component props interface pattern
+
+### Batch 1: Tooling & Editor Config
+
 - [ ] [chore] Add ESLint configuration if not present
 - [ ] [chore] Add Prettier configuration for code formatting
 - [ ] [chore] Configure .editorconfig for consistent editor settings
 - [ ] [chore] Add VS Code workspace settings (extensions, formatter)
-- [ ] [chore] Refactor Rust backend: separate concerns into modules (auth, notes, tags)
+
+### Batch 2: Rust Backend Modularization
+
+- [ ] [chore] Refactor Rust backend: separate concerns into modules (`commands/users.rs`, `commands/notes.rs`, `db.rs`)
 - [ ] [chore] Extract Rust error handling to more detailed error types
 - [ ] [chore] Add Rust code documentation (doc comments on public APIs)
 - [ ] [chore] Create consistent naming convention for Tauri commands (e.g., `user_*.rs`, `note_*.rs`)
+
+### Batch 3: Frontend Utility & Type Organization
+
+- [ ] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
+- [ ] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
+- [ ] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
+
+### Batch 4: Reusable UI Components
+
+- [ ] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
+- [ ] [chore] Create consistent component props interface pattern
+
+### Batch 5: Layout & App Shell
+
+- [ ] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
+- [ ] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
 
 ## Phase 1: Fix Critical Bugs & Foundation
 - [ ] [bug] Fix missing foreign key constraint on `notes.user_id`
