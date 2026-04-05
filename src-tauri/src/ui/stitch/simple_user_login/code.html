@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@500&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#eae4e0",
+                    "surface-dim": "#0f0e0d",
+                    "on-primary": "#523c23",
+                    "surface-container-lowest": "#000000",
+                    "on-primary-container": "#eccaa8",
+                    "inverse-primary": "#745a3f",
+                    "tertiary-fixed": "#fceab9",
+                    "on-background": "#eae4e0",
+                    "primary-fixed-dim": "#f0cfac",
+                    "outline": "#787572",
+                    "inverse-on-surface": "#575553",
+                    "tertiary-container": "#fceab9",
+                    "secondary-container": "#403a35",
+                    "error-dim": "#ba573f",
+                    "secondary-fixed": "#ebe1d9",
+                    "primary-fixed": "#ffddba",
+                    "on-primary-fixed": "#513b22",
+                    "surface-container-low": "#141312",
+                    "on-secondary-container": "#c7beb6",
+                    "secondary-dim": "#a59c96",
+                    "background": "#0f0e0d",
+                    "on-error": "#450900",
+                    "error": "#ed7f64",
+                    "on-secondary-fixed-variant": "#615a54",
+                    "error-container": "#7e2b17",
+                    "tertiary": "#fff8f0",
+                    "primary-container": "#594229",
+                    "surface-tint": "#e2c19f",
+                    "tertiary-fixed-dim": "#eddcac",
+                    "primary": "#e2c19f",
+                    "inverse-surface": "#fdf8f6",
+                    "secondary-fixed-dim": "#ddd3cb",
+                    "outline-variant": "#4a4745",
+                    "surface-container": "#1b1918",
+                    "on-tertiary-container": "#625630",
+                    "on-secondary-fixed": "#443e39",
+                    "primary-dim": "#d3b392",
+                    "on-secondary": "#241f1b",
+                    "on-tertiary": "#6a5e38",
+                    "surface-container-highest": "#272523",
+                    "surface-bright": "#2e2c29",
+                    "surface": "#0f0e0d",
+                    "on-tertiary-fixed": "#4f4420",
+                    "on-tertiary-fixed-variant": "#6c603a",
+                    "tertiary-dim": "#eddcac",
+                    "surface-variant": "#272523",
+                    "secondary": "#a59c96",
+                    "on-surface-variant": "#afaaa7",
+                    "on-error-container": "#ff9b82",
+                    "surface-container-high": "#211f1d",
+                    "on-primary-fixed-variant": "#70573c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Inter"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0f0e0d;
+        }
+        .avatar-glow {
+            box-shadow: 0 0 20px rgba(226, 193, 159, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface flex items-center justify-center min-h-screen selection:bg-primary-container selection:text-on-primary-container">
+<!-- Subtle Background Texture -->
+<div class="fixed inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 50% 50%, #211f1d 0%, #0f0e0d 100%);">
+</div>
+<main class="relative z-10 w-full max-w-sm px-8 flex flex-col items-center">
+<!-- Brand Identity -->
+<div class="text-center mb-16">
+<h1 class="text-2xl font-headline font-bold tracking-[0.2em] text-on-surface mb-1 uppercase">
+                The Atelier
+            </h1>
+<p class="font-label text-outline text-[10px] uppercase tracking-[0.4em]">
+                Private Workspace
+            </p>
+</div>
+<!-- Minimal Selection & Input -->
+<div class="w-full flex flex-col items-center space-y-10">
+<!-- User Selection Button -->
+<button class="group flex flex-col items-center focus:outline-none">
+<div class="relative w-24 h-24 rounded-full bg-surface-container-high p-1 border border-outline-variant/20 transition-all duration-500 group-hover:border-primary/50 group-hover:scale-105 avatar-glow overflow-hidden">
+<img alt="Alex River" class="w-full h-full object-cover rounded-full grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZv-pvaBckkVprklN9jkmip-mfRuujAFrCFbuxRPsA3UKfjIbJGjeBzDVMSrum650ED_VMSApCWZx8xJ3_OlYmA7BqEfe8GrtjPFk2Kbj6Zzr4qF5ZaOkKGLIqW-zfijkVltw522BNqUctHjCt692mAVKs6HuWww0-fvbKhsLIO16ioyDhJdUa4FsjBJf-mlzOgMoIAttZkJmPpdree8qaB9gBu2684doxEi_q063wA5Mw-1UBSNE9OjyyYM5-I1_JmTkeclXBSNie"/>
+<div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</div>
+<h2 class="mt-6 text-xl font-headline font-semibold text-on-surface tracking-tight group-hover:text-primary transition-colors">Alex River</h2>
+</button>
+<!-- Sleek Single Input -->
+<form class="w-full space-y-6" onsubmit="return false;">
+<div class="relative group">
+<input autofocus="" class="block w-full px-0 py-3 bg-transparent border-0 border-b border-outline-variant/40 rounded-none text-center text-on-surface placeholder:text-outline-variant/50 focus:ring-0 focus:border-primary transition-all duration-300 font-body text-lg" id="password" name="password" placeholder="Key required" type="password"/>
+<div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-primary transition-all duration-500 group-focus-within:w-full"></div>
+</div>
+<button class="hidden" type="submit">Unlock</button>
+</form>
+<!-- Quick Links -->
+<div class="flex flex-col items-center space-y-4">
+<a class="text-[11px] text-outline hover:text-primary transition-colors uppercase tracking-[0.2em] font-label font-medium" href="#">Switch User</a>
+</div>
+</div>
+<!-- Minimal Footer -->
+<div class="mt-24 text-center opacity-40">
+<p class="text-[9px] text-secondary-dim font-label tracking-[0.3em] uppercase flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'wght' 200;">encrypted</span>
+<span>End-to-End Encrypted</span>
+</p>
+</div>
+</main>
+<!-- Decorative Corner Elements -->
+<div class="fixed top-8 left-8 hidden lg:block opacity-20">
+<div class="w-8 h-[1px] bg-outline"></div>
+<div class="w-[1px] h-8 bg-outline mt-[-1px]"></div>
+</div>
+<div class="fixed bottom-8 right-8 hidden lg:block opacity-20">
+<div class="w-[1px] h-8 bg-outline ml-8"></div>
+<div class="w-8 h-[1px] bg-outline mt-[-1px]"></div>
+</div>
+</body></html>

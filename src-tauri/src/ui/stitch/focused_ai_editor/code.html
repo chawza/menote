@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#eae4e0",
+                      "surface-dim": "#0f0e0d",
+                      "on-primary": "#523c23",
+                      "surface-container-lowest": "#000000",
+                      "on-primary-container": "#eccaa8",
+                      "inverse-primary": "#745a3f",
+                      "tertiary-fixed": "#fceab9",
+                      "on-background": "#eae4e0",
+                      "primary-fixed-dim": "#f0cfac",
+                      "outline": "#787572",
+                      "inverse-on-surface": "#575553",
+                      "tertiary-container": "#fceab9",
+                      "secondary-container": "#403a35",
+                      "error-dim": "#ba573f",
+                      "secondary-fixed": "#ebe1d9",
+                      "primary-fixed": "#ffddba",
+                      "on-primary-fixed": "#513b22",
+                      "surface-container-low": "#141312",
+                      "on-secondary-container": "#c7beb6",
+                      "secondary-dim": "#a59c96",
+                      "background": "#0f0e0d",
+                      "on-error": "#450900",
+                      "error": "#ed7f64",
+                      "on-secondary-fixed-variant": "#615a54",
+                      "error-container": "#7e2b17",
+                      "tertiary": "#fff8f0",
+                      "primary-container": "#594229",
+                      "surface-tint": "#e2c19f",
+                      "tertiary-fixed-dim": "#eddcac",
+                      "primary": "#e2c19f",
+                      "inverse-surface": "#fdf8f6",
+                      "secondary-fixed-dim": "#ddd3cb",
+                      "outline-variant": "#4a4745",
+                      "surface-container": "#1b1918",
+                      "on-tertiary-container": "#625630",
+                      "on-secondary-fixed": "#443e39",
+                      "primary-dim": "#d3b392",
+                      "on-secondary": "#241f1b",
+                      "on-tertiary": "#6a5e38",
+                      "surface-container-highest": "#272523",
+                      "surface-bright": "#2e2c29",
+                      "surface": "#0f0e0d",
+                      "on-tertiary-fixed": "#4f4420",
+                      "on-tertiary-fixed-variant": "#6c603a",
+                      "tertiary-dim": "#eddcac",
+                      "surface-variant": "#272523",
+                      "secondary": "#a59c96",
+                      "on-surface-variant": "#afaaa7",
+                      "on-error-container": "#ff9b82",
+                      "surface-container-high": "#211f1d",
+                      "on-primary-fixed-variant": "#70573c"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "fontFamily": {
+                      "headline": ["Manrope"],
+                      "body": ["Manrope"],
+                      "label": ["Inter"]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        body { background-color: #0f0e0d; color: #eae4e0; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #272523; border-radius: 10px; }
+    </style>
+</head>
+<body class="font-body selection:bg-primary-container selection:text-on-primary-container">
+<aside class="bg-stone-900 dark:bg-[#1b1918] font-['Manrope'] text-sm tracking-wide h-full w-64 fixed left-0 top-0 flex flex-col h-screen py-8 pr-4 justify-between no-border tonal-shift bg-[#1b1918] flat no shadows z-50">
+<div>
+<div class="px-6 mb-12">
+<h1 class="text-lg font-bold tracking-tight text-[#e2c19f]">The Atelier</h1>
+<p class="text-stone-500 text-xs mt-1">Creative Workspace</p>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center px-6 py-3 text-[#e2c19f] font-semibold bg-[#211f1d] rounded-r-lg Active: scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="description">description</span>
+                    Notes
+                </a>
+<a class="flex items-center px-6 py-3 text-stone-400 hover:text-stone-200 hover:bg-[#211f1d] transition-colors duration-200 Active: scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="person">person</span>
+                    Profile
+                </a>
+<a class="flex items-center px-6 py-3 text-stone-400 hover:text-stone-200 hover:bg-[#211f1d] transition-colors duration-200 Active: scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="label">label</span>
+                    Tags
+                </a>
+</nav>
+<div class="px-6 mt-8">
+<button class="w-full py-3 rounded-xl bg-gradient-to-br from-primary to-primary-container text-on-primary font-bold text-sm tracking-tight shadow-lg flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    New Note
+                </button>
+</div>
+</div>
+<div class="space-y-1 mt-auto">
+<a class="flex items-center px-6 py-3 text-stone-400 hover:text-stone-200 hover:bg-[#211f1d] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="settings">settings</span>
+                Settings
+            </a>
+<a class="flex items-center px-6 py-3 text-stone-400 hover:text-stone-200 hover:bg-[#211f1d] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined mr-3" data-icon="help">help</span>
+                Help
+            </a>
+<div class="flex items-center px-6 py-4 mt-4 border-t border-outline-variant/10">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-primary-container flex items-center justify-center mr-3">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="professional headshot of a woman with minimalist aesthetic, soft studio lighting, muted earth tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf5_NSowvJMbvIJpKUIFBxMx6-t8FUMsJT0Jkoc7-jMpiy5O75Vo3hWURRj3zN-OcTShqAkljBiyzrmip-QWhh3Xd6g0r0QQpREL0CklpeuG3T4p3ZKwmzmPUXP7IgwmGPsJ4rfbZhRsi98lTug9V2aUrcOaapWW5_AsW-Oba64vedwwJVGOeneB8zMIPmoKHYWK1Xb5K8sPqKfXR7vvV4YjxkJWkx7tgz1_TWVc7KBGG9HEewNXBydmcUvT602p-QXsauyTo49vnW"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-semibold text-on-surface">Alex Chen</span>
+<span class="text-[10px] text-stone-500">Premium Member</span>
+</div>
+</div>
+</div>
+</aside>
+<main class="ml-64 p-12 lg:p-20 min-h-screen flex gap-16 justify-center">
+<div class="flex-grow max-w-3xl space-y-12">
+<div class="space-y-6">
+<div class="flex items-center gap-3 text-secondary text-xs font-label uppercase tracking-[0.2em]">
+<span>Draft</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>March 24, 2024</span>
+</div>
+<input class="w-full bg-transparent border-none focus:ring-0 text-5xl font-headline font-extrabold text-on-surface tracking-tight placeholder:text-surface-container-highest p-0" placeholder="Untitled Masterpiece" type="text"/>
+</div>
+<div class="relative group">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-xl leading-relaxed text-on-surface/80 min-h-[70vh] font-body resize-none placeholder:text-surface-container-highest p-0" placeholder="Begin weaving your narrative here..."></textarea>
+<div class="absolute -left-16 top-0 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-2 text-stone-600 hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="drag_indicator">drag_indicator</span>
+</button>
+</div>
+</div>
+</div>
+<aside class="w-80 shrink-0 space-y-6 hidden xl:block">
+<div class="p-6 rounded-2xl bg-surface-container border border-outline-variant/10 backdrop-blur-xl">
+<div class="flex items-center justify-between mb-6">
+<h3 class="font-headline font-semibold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-lg" data-icon="smart_toy" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+                        AI Architect
+                    </h3>
+<span class="px-2 py-0.5 rounded text-[10px] font-label font-bold bg-primary/10 text-primary uppercase tracking-tighter">Ready</span>
+</div>
+<div class="space-y-3">
+<button class="w-full p-4 text-left rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-outline-variant/5 flex items-center gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Generate Outline</p>
+<p class="text-[11px] text-stone-500">Structure your thoughts</p>
+</div>
+</button>
+<button class="w-full p-4 text-left rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-outline-variant/5 flex items-center gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="spellcheck">spellcheck</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Fix Grammar</p>
+<p class="text-[11px] text-stone-500">Polishing and refinement</p>
+</div>
+</button>
+<button class="w-full p-4 text-left rounded-xl bg-surface-container-low hover:bg-surface-container-high transition-colors border border-outline-variant/5 flex items-center gap-4 group">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<div>
+<p class="text-sm font-semibold text-on-surface">Brainstorm</p>
+<p class="text-[11px] text-stone-500">Expand on this concept</p>
+</div>
+</button>
+</div>
+<div class="mt-8 pt-6 border-t border-outline-variant/10">
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant/20 mb-4">
+<p class="text-xs text-stone-400 italic leading-relaxed">
+                            "This section currently lacks a strong emotional hook. Consider starting with the sensory details of the atelier..."
+                        </p>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex -space-x-2">
+<img alt="AI Agent 1" class="w-6 h-6 rounded-full border border-surface" data-alt="profile of creative male assistant, cinematic lighting, professional workspace background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrEuB7_KdAuTwqghE2pzueLFKgya8SoO1QJF66hXfcde_PomT2fPOmxL-ZSfuW9kyIQ73qVEQR6ixbqEuAlUr8qQNkIEV3sRTInLmyQvkN2ZCtP6CCc8eJVU25-WdCX9vZ8gT5RdcvuPmT_4bUOy8JJ8mS4ZiXiVtkLbk2tTBPrCxOPs34eghxgySnVEk0q1Ba3drmcKy3PnEAAlIC-yNisLxr9kj9rsNDmHvgTGzOaiQNcDLMWNxAvRiNJKZNFqUo3rUmY2I1I1qO"/>
+<img alt="AI Agent 2" class="w-6 h-6 rounded-full border border-surface" data-alt="profile of elegant woman strategist, soft shadows, sophisticated office setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAM0iRlyzZjDLDQ6cHi_9pPRJ8yfxKN9whvNtgLr2mN7kFX8dqUid8vFTQg2i33X1MnSSdNGvyayREccilyAkK1lwK_rKBzzdst1Ma1WMRNhE0u8p52iUIspQTwl4q9KQV4PoWVWO5fLq1GwfqUPzqkcOk5qVOO_X10rjS3hd1cuywTn_RoLNaYBdTNF8vmBzUqHnvyONu2jUKo3Ek95MiAcHI4frkHdYuq10cBpYxxV0R84_bViGdI6T2hogfcyiaEMkPa0NrvSFP0"/>
+</div>
+<span class="text-[10px] text-stone-500 font-label">2 agents analyzing flow</span>
+</div>
+</div>
+</div>
+<div class="p-6 rounded-2xl bg-gradient-to-br from-surface-container-low to-surface-container border border-outline-variant/10">
+<h4 class="text-xs font-label text-secondary mb-4 uppercase tracking-widest">Metadata</h4>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-stone-500">Words</span>
+<span class="text-on-surface font-semibold">1,204</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-stone-500">Reading Time</span>
+<span class="text-on-surface font-semibold">4 mins</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-stone-500">Tone</span>
+<span class="text-primary font-semibold">Reflective</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+<div class="fixed bottom-8 right-8 flex flex-col items-end gap-4">
+<div class="flex gap-2">
+<div class="bg-surface-container-highest/80 backdrop-blur-md px-4 py-2 rounded-full border border-outline-variant/20 shadow-2xl flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+<span class="text-xs font-label text-on-surface">Agent listening...</span>
+</div>
+</div>
+<button class="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-[0px_20px_40px_rgba(0,0,0,0.4)] hover:scale-105 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-2xl" data-icon="mic" style="font-variation-settings: 'FILL' 1;">mic</span>
+</button>
+</div>
+</body></html>
