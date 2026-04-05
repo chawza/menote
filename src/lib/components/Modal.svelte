@@ -12,8 +12,8 @@
 </script>
 
 <div
-  class="modal-overlay"
-  class:modal-overlay--open={isShow}
+  class="overlay modal-overlay"
+  class:overlay--open={isShow}
   onclick={onclose}
   onkeydown={(e) => e.key === 'Escape' && onclose()}
   role="button"
@@ -24,7 +24,7 @@
   {#if title}
     <div class="modal__header">
       <h2 class="modal__title">{title}</h2>
-      <button class="modal__close" onclick={onclose}>×</button>
+      <button class="close-btn modal__close" onclick={onclose}>×</button>
     </div>
   {/if}
 
@@ -35,18 +35,7 @@
 
 <style>
   .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
     z-index: 60;
-  }
-
-  .modal-overlay--open {
-    opacity: 1;
-    visibility: visible;
   }
 
   .modal {
@@ -55,15 +44,15 @@
     left: 50%;
     transform: translate(-50%, -50%) scale(0.95);
     background-color: var(--color-surface);
-    border-radius: 1rem;
+    border-radius: var(--radius-lg);
     padding: 1.5rem;
     max-width: 500px;
     width: 90%;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    transition: opacity var(--transition-fast), transform var(--transition-fast), visibility var(--transition-fast);
     z-index: 70;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--shadow-lg);
   }
 
   .modal--open {
@@ -86,18 +75,7 @@
   }
 
   .modal__close {
-    background: none;
-    border: none;
     font-size: 1.75rem;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1;
-    transition: color 0.2s ease;
-  }
-
-  .modal__close:hover {
-    color: var(--color-text);
   }
 
   .modal__body {

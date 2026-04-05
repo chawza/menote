@@ -13,10 +13,10 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ## Phase 0: Codebase Refactoring & Foundation
 
-- [ ] [chore] Create global CSS file (`src/app.css` or `src/global.css`) for shared styles
-- [ ] [chore] Extract CSS variables (colors, spacing, typography) to global CSS
-- [ ] [chore] Remove inline styles and component-scoped `&:style` blocks where possible
-- [ ] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
+- [x] [chore] Create global CSS file (`src/app.css` or `src/global.css`) for shared styles
+- [x] [chore] Extract CSS variables (colors, spacing, typography) to global CSS
+- [x] [chore] Remove inline styles and component-scoped `&:style` blocks where possible
+- [x] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
 - [ ] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
 - [ ] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
 - [ ] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)

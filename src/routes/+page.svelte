@@ -124,7 +124,7 @@
     <div class="notes">
       <!-- add unique note by note.id and updated_at also -->
       {#each notes as note (note.id)}
-        <div class="note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
+        <div class="card note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
           <div class="note-card__body">
             <p class="note-card__content">{note.content}</p>
             <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); handleDelete(note); }} aria-label="Delete note">
@@ -142,14 +142,14 @@
     </div>
   </div>
 
-  <div class="drawer-overlay" class:drawer-overlay--open={isDrawerOpen} onclick={closeDrawer} onkeydown={(e) => e.key === 'Escape' && closeDrawer()} role="button" tabindex="-1"></div>
+  <div class="overlay drawer-overlay" class:overlay--open={isDrawerOpen} onclick={closeDrawer} onkeydown={(e) => e.key === 'Escape' && closeDrawer()} role="button" tabindex="-1"></div>
 
   <div class="drawer" class:drawer--open={isDrawerOpen}>
     <div class="drawer__handle"></div>
     {#if selectedNote}
       <div class="drawer__header">
         <h2 class="drawer__title">Edit Note</h2>
-        <button class="drawer__close" onclick={closeDrawer}>×</button>
+        <button class="close-btn drawer__close" onclick={closeDrawer}>×</button>
       </div>
 
       <div class="drawer__meta">
@@ -158,9 +158,9 @@
       </div>
 
       <div class="drawer__form">
-        <textarea class="drawer__textarea" bind:value={contentForm}></textarea>
+        <textarea class="input drawer__textarea" bind:value={contentForm}></textarea>
         <button
-          class="drawer__submit"
+          class="btn btn--primary drawer__submit"
           onclick={() => selectedNote && handleUpdate(selectedNote)}
           disabled={isUpdating}
         >
@@ -182,12 +182,12 @@
     {#snippet children()}
       <div class="create-form">
         <textarea
-          class="create-form__textarea"
+          class="input create-form__textarea"
           bind:value={newNoteContent}
           placeholder="Write your note here..."
         ></textarea>
         <button
-          class="create-form__submit"
+          class="btn btn--primary create-form__submit"
           onclick={handleCreateNote}
           disabled={isCreating}
         >
@@ -217,47 +217,7 @@
 <ToastContainer />
 
 <style>
-  :root {
-    --color-bg: #faf8f5;
-    --color-surface: #ffffff;
-    --color-text: #2d2a26;
-    --color-text-muted: #8a857d;
-    --color-border: #e8e4df;
-    --color-accent: #c4a77d;
-    --color-accent-hover: #b3976d;
-    --toast-success: #7d9f7d;
-    --toast-info: #7d9fc4;
-    --toast-warning: #c4a77d;
-    --toast-error: #c47d7d;
-    --font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --color-bg: #1a1816;
-      --color-surface: #252220;
-      --color-text: #f0ebe5;
-      --color-text-muted: #9a948c;
-      --color-border: #3a3632;
-      --color-accent: #d4b78d;
-      --color-accent-hover: #c4a77d;
-      --toast-success: #8fb08f;
-      --toast-info: #8fb0d4;
-      --toast-warning: #d4b78d;
-      --toast-error: #d48f8f;
-    }
-  }
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
   .main {
-    font-family: var(--font-family);
-    background-color: var(--color-bg);
-    color: var(--color-text);
     min-height: 100vh;
     padding: 2rem;
   }
@@ -286,16 +246,12 @@
   }
 
   .note-card {
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
     cursor: pointer;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow var(--transition-fast), transform var(--transition-fast);
   }
 
   .note-card:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-sm);
     transform: translateY(-2px);
   }
 
@@ -324,7 +280,7 @@
     cursor: pointer;
     padding: 0.25rem;
     opacity: 0;
-    transition: opacity 0.2s ease, color 0.2s ease;
+    transition: opacity var(--transition-fast), color var(--transition-fast);
     flex-shrink: 0;
   }
 
@@ -333,7 +289,7 @@
   }
 
   .note-card__delete:hover {
-    color: #dc3545;
+    color: var(--color-danger);
   }
 
   .note-card__meta {
@@ -349,7 +305,7 @@
 
   .note-card__date--updated {
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity var(--transition-fast);
   }
 
   .note-card:hover .note-card__date--updated {
@@ -357,18 +313,7 @@
   }
 
   .drawer-overlay {
-    position: fixed;
-    inset: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
     z-index: 10;
-  }
-
-  .drawer-overlay--open {
-    opacity: 1;
-    visibility: visible;
   }
 
   .drawer {
@@ -377,10 +322,10 @@
     left: 0;
     right: 0;
     background-color: var(--color-surface);
-    border-radius: 1.5rem 1.5rem 0 0;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     padding: 1rem 1.5rem 2rem;
     transform: translateY(100%);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-normal);
     z-index: 20;
     max-height: 80vh;
     overflow-y: auto;
@@ -413,17 +358,7 @@
   }
 
   .drawer__close {
-    background: none;
-    border: none;
     font-size: 1.5rem;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1;
-  }
-
-  .drawer__close:hover {
-    color: var(--color-text);
   }
 
   .drawer__meta {
@@ -445,42 +380,11 @@
   }
 
   .drawer__textarea {
-    width: 100%;
     min-height: 150px;
-    padding: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    font-family: inherit;
-    font-size: 0.875rem;
-    resize: vertical;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-  }
-
-  .drawer__textarea:focus {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
   }
 
   .drawer__submit {
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    border: none;
-    padding: 0.75rem 1.5rem;
-    border-radius: 0.75rem;
-    font-size: 0.875rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .drawer__submit:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
-  }
-
-  .drawer__submit:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    width: 100%;
   }
 
   .create-note-fab {
@@ -497,8 +401,8 @@
     font-weight: 300;
     line-height: 1;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: background-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
     z-index: 30;
     display: flex;
     align-items: center;
@@ -522,49 +426,14 @@
   }
 
   .create-form__textarea {
-    width: 100%;
     min-height: 200px;
-    padding: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    font-family: inherit;
     font-size: 1rem;
-    line-height: 1.5;
-    resize: vertical;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    transition: border-color 0.2s ease;
-  }
-
-  .create-form__textarea:focus {
-    outline: none;
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(196, 167, 125, 0.2);
-  }
-
-  .create-form__textarea::placeholder {
-    color: var(--color-text-muted);
   }
 
   .create-form__submit {
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    border: none;
-    padding: 0.875rem 1.5rem;
-    border-radius: 0.75rem;
+    width: 100%;
     font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .create-form__submit:hover:not(:disabled) {
-    background-color: var(--color-accent-hover);
-  }
-
-  .create-form__submit:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    padding: 0.875rem 1.5rem;
   }
 
   .delete-preview {

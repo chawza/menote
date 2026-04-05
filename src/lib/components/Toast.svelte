@@ -63,13 +63,13 @@
       <p class="toast__message">{toast.message}</p>
 
       {#if toast.onConfirm}
-        <button class="toast__confirm" onclick={handleConfirm}>
+    <button class="btn btn--primary toast__confirm" onclick={handleConfirm}>
           {toast.confirmText}
         </button>
       {/if}
     </div>
 
-    <button class="toast__close" onclick={() => ondismiss?.(toast.id)} aria-label="Dismiss">
+    <button class="close-btn toast__close" onclick={() => ondismiss?.(toast.id)} aria-label="Dismiss">
       ×
     </button>
   </div>
@@ -88,28 +88,28 @@
   .toast {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
     min-width: 300px;
     max-width: 400px;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    transition: transform var(--transition-normal), opacity var(--transition-normal);
   }
 
   .toast--success {
-    border-left: 4px solid var(--toast-success, #7d9f7d);
+    border-left: 4px solid var(--toast-success);
   }
 
   .toast--info {
-    border-left: 4px solid var(--toast-info, #7d9fc4);
+    border-left: 4px solid var(--toast-info);
   }
 
   .toast--warning {
-    border-left: 4px solid var(--toast-warning, #c4a77d);
+    border-left: 4px solid var(--toast-warning);
   }
 
   .toast--error {
-    border-left: 4px solid var(--toast-error, #c47d7d);
+    border-left: 4px solid var(--toast-error);
   }
 
   .toast__content {
@@ -132,22 +132,22 @@
   }
 
   .toast--success .toast__icon {
-    background-color: var(--toast-success, #7d9f7d);
+    background-color: var(--toast-success);
     color: white;
   }
 
   .toast--info .toast__icon {
-    background-color: var(--toast-info, #7d9fc4);
+    background-color: var(--toast-info);
     color: white;
   }
 
   .toast--warning .toast__icon {
-    background-color: var(--toast-warning, #c4a77d);
+    background-color: var(--toast-warning);
     color: white;
   }
 
   .toast--error .toast__icon {
-    background-color: var(--toast-error, #c47d7d);
+    background-color: var(--toast-error);
     color: white;
   }
 
@@ -169,35 +169,12 @@
 
   .toast__confirm {
     margin-top: 0.75rem;
-    background-color: var(--color-accent);
-    color: var(--color-bg);
-    border: none;
     padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
     font-size: 0.75rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .toast__confirm:hover {
-    background-color: var(--color-accent-hover);
   }
 
   .toast__close {
-    flex-shrink: 0;
-    background: none;
-    border: none;
-    color: var(--color-text-muted);
-    cursor: pointer;
-    padding: 0.25rem;
     font-size: 1.25rem;
-    line-height: 1;
-    transition: color 0.2s ease;
-  }
-
-  .toast__close:hover {
-    color: var(--color-text);
   }
 
   .toast__progress {
@@ -212,31 +189,18 @@
   }
 
   .toast__progress-bar--success {
-    background-color: var(--toast-success, #7d9f7d);
+    background-color: var(--toast-success);
   }
 
   .toast__progress-bar--info {
-    background-color: var(--toast-info, #7d9fc4);
+    background-color: var(--toast-info);
   }
 
   .toast__progress-bar--warning {
-    background-color: var(--toast-warning, #c4a77d);
+    background-color: var(--toast-warning);
   }
 
   .toast__progress-bar--error {
-    background-color: var(--toast-error, #c47d7d);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .toast {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    }
-
-    :global(:root) {
-      --toast-success: #8fb08f;
-      --toast-info: #8fb0d4;
-      --toast-warning: #d4b78d;
-      --toast-error: #d48f8f;
-    }
+    background-color: var(--toast-error);
   }
 </style>
