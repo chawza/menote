@@ -12,6 +12,7 @@ MeNote is a markdown note-taking desktop app. Multi-user on one device, local-fi
 - **Desktop**: Tauri 2.x (Rust backend)
 - **Database**: SQLite via Diesel ORM with embedded migrations
 - **Type Bridge**: tauri-specta + specta for TypeScript type generation from Rust types (NOT ts-rs — ts-rs is an unused dependency in Cargo.toml)
+- **Component Viewer**: Storybook 10 + @storybook/sveltekit + @storybook/addon-svelte-csf
 - **Package Manager**: Yarn
 
 ## Commands
@@ -27,6 +28,11 @@ yarn lint:fix           # Biome lint + format fix
 yarn format             # Biome format (write)
 yarn format:check       # Biome format check (CI)
 yarn tauri build        # Build production desktop app
+```
+
+```bash
+yarn storybook           # Start Storybook component viewer
+yarn build-storybook     # Build static Storybook site
 ```
 
 ```bash
@@ -49,7 +55,8 @@ menote/
 │       │   ├── ConfirmModal.svelte
 │       │   ├── Modal.svelte
 │       │   ├── Toast.svelte
-│       │   └── ToastContainer.svelte
+│       │   ├── ToastContainer.svelte
+│       │   ├── *.stories.svelte   # Storybook stories (one per component)
 │       ├── stores/
 │       │   └── toast.ts          # Svelte writable store for toast notifications
 │       ├── types/
@@ -108,6 +115,7 @@ menote/
 - Import commands from `src/lib/utils/tauri.ts` which re-exports the `commands` object
 - kebab-case for file names, PascalCase for component names
 - Component files go in `src/lib/components/`
+- **Every component must have a corresponding `*.stories.svelte` file** in the same directory. Create it when creating a new component. Use `defineMeta` from `@storybook/addon-svelte-csf` with `tags: ['autodocs']`. Cover key variants (e.g., open/closed states, different types).
 - Stores go in `src/lib/stores/`
 - Types go in `src/lib/types/`
 
