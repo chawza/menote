@@ -86,7 +86,9 @@ fn delete_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<usize, AppE
 fn update_note(note: UpdateNote) -> Result<NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
     let conn = &mut establish_connection();
-    diesel::update(notes).set(&note).execute(conn)?;
+    diesel::update(notes.filter(id.eq(note.id)))
+        .set(&note)
+        .execute(conn)?;
     get_note_by_id(note.id, conn)
 }
 
