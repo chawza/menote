@@ -1,11 +1,13 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import { type NoteDetail } from '../bindings';
-import ConfirmModal from '../lib/components/ConfirmModal.svelte';
-import Modal from '../lib/components/Modal.svelte';
-import ToastContainer from '../lib/components/ToastContainer.svelte';
-import { toastStore } from '../lib/stores/toast';
-import { commands, tryCommand } from '../lib/utils/tauri';
+import { commands } from '$lib/commands';
+import ConfirmModal from '$lib/components/ConfirmModal.svelte';
+import Modal from '$lib/components/Modal.svelte';
+import ToastContainer from '$lib/components/ToastContainer.svelte';
+import { toastStore } from '$lib/stores/toast';
+import type { NoteDetail } from '$lib/types';
+import { formatLocal, nowUnix } from '$lib/utils/date';
+import { tryCommand } from '$lib/utils/tauri';
 
 let notes = $state<NoteDetail[]>([]);
 let selectedNote = $state<NoteDetail | null>(null);
@@ -23,14 +25,6 @@ onMount(async () => {
     (a, b) => b.created_at - a.created_at,
   );
 });
-
-const formatLocal = (ts: number) => {
-  const date = new Date(ts * 1000);
-  return date.toLocaleString(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-};
 
 function openDrawer(note: NoteDetail) {
   selectedNote = note;
@@ -52,7 +46,7 @@ async function handleUpdate(note: NoteDetail) {
       commands.updateNote({
         id: note.id,
         content: contentForm,
-        updated_at: Math.floor(Date.now() / 1000),
+        updated_at: nowUnix(),
       }),
     );
     notes = notes.map((n) => (n.id === updatedNote.id ? updatedNote : n));
@@ -91,7 +85,7 @@ async function handleCreateNote() {
     return;
   }
   isCreating = true;
-  const now = Math.round(Date.now() / 1000);
+  const now = nowUnix();
   try {
     const newNote = await tryCommand(() =>
       commands.createNote({

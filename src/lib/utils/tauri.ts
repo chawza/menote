@@ -1,6 +1,6 @@
-import type { AppError } from '../../bindings';
-import { commands } from '../../bindings';
-import { toastStore } from '../stores/toast';
+import { commands } from '$lib/commands';
+import { toastStore } from '$lib/stores/toast';
+import type { AppError } from '$lib/types';
 
 type CommandResult<T> =
   | { status: 'ok'; data: T }

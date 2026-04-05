@@ -19,6 +19,7 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 - [x] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
 
 ### Batch 1: Tooling & Editor Config
+
 - [x] [chore] Add Biome for linting + formatting (replaces ESLint + Prettier)
 - [x] [chore] Configure .editorconfig for consistent editor settings
 - [x] [chore] Configure Zed editor to use Biome (formatter + code actions)
@@ -32,9 +33,9 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ### Batch 3: Frontend Utility & Type Organization
 
-- [ ] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
-- [ ] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
-- [ ] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
+- [x] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
+- [x] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
+- [x] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
 
 ### Batch 4: Reusable UI Components
 
