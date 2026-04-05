@@ -7,12 +7,12 @@ use specta_typescript::Typescript;
 use tauri_specta::{collect_commands, Builder};
 
 use crate::{
-    dto::{NewNote, NoteDetail, UpdateNote, UserData},
-    error::AppError,
-    models::Note,
+    error::AppError, models::{notes::Note, users::User},
 };
 
-pub mod dto;
+use crate::models::notes;
+use crate::models::users;
+
 pub mod error;
 pub mod models;
 pub mod schema;
@@ -68,13 +68,11 @@ fn setup_data_base(app: &tauri::App) {
 
 #[specta::specta]
 #[tauri::command]
-fn get_all_users() -> Result<Vec<dto::UserData>, AppError> {
-    use self::schema::users::dsl::*;
-    use crate::models::User;
+fn get_all_users() -> Result<Vec<users::UserData>, AppError> {
 
     let conn = &mut establish_connection();
     let fetched = users.select(User::as_select()).load(conn)?;
-    let results: Vec<UserData> = fetched
+    let results: Vec<users::UserData> = fetched
         .into_iter()
         .map(|user| {
             Ok(UserData {
@@ -92,7 +90,7 @@ fn get_all_users() -> Result<Vec<dto::UserData>, AppError> {
 
 #[specta::specta]
 #[tauri::command]
-fn create_note(note: NewNote) -> Result<dto::NoteDetail, AppError> {
+fn create_note(note: notes::NewNote) -> Result<notes::NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
     use diesel::insert_into;
 
@@ -110,12 +108,12 @@ fn create_note(note: NewNote) -> Result<dto::NoteDetail, AppError> {
     })
 }
 
-fn get_note_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<NoteDetail, AppError> {
+fn get_note_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<notes::NoteDetail, AppError> {
     use crate::schema::notes;
     let note = notes::table
         .filter(notes::id.eq(note_id))
-        .first::<Note>(conn)?;
-    Ok(NoteDetail {
+        .first::<notes::Note>(conn)?;
+    Ok(notes::NoteDetail {
         id: note
             .id
             .ok_or_else(|| AppError::Internal("Note missing id".into()))?,
@@ -133,7 +131,7 @@ fn delete_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<usize, AppE
 
 #[specta::specta]
 #[tauri::command]
-fn update_note(note: UpdateNote) -> Result<dto::NoteDetail, AppError> {
+fn update_note(note: notes::UpdateNote) -> Result<notes::NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
     let conn = &mut establish_connection();
     diesel::update(notes).set(&note).execute(conn)?;
@@ -153,20 +151,20 @@ fn delete_note(note_id: i32) -> Result<bool, AppError> {
 
 #[specta::specta]
 #[tauri::command]
-fn get_notes(user_id: i32) -> Result<Vec<dto::NoteDetail>, AppError> {
+fn get_notes(user_id: i32) -> Result<Vec<notes::NoteDetail>, AppError> {
     use crate::schema::notes;
 
     let conn = &mut establish_connection();
 
-    let fetched_notes: Vec<Note> = notes::table
+    let fetched_notes: Vec<notes::Note> = notes::table
         .filter(notes::user_id.eq(user_id))
         .order_by(notes::created_at.desc())
-        .load::<Note>(conn)?;
+        .load::<notes::Note>(conn)?;
 
     let results = fetched_notes
         .iter()
         .map(|note| {
-            Ok(NoteDetail {
+            Ok(notes::NoteDetail {
                 id: note
                     .id
                     .ok_or_else(|| AppError::Internal("Note missing id".into()))?,
