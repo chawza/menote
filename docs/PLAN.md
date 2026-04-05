@@ -11,40 +11,14 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ---
 
-## Phase 0: Codebase Refactoring & Foundation
+## Phase 0: Codebase Refactoring & Foundation ✅
 
-- [x] [chore] Create global CSS file (`src/app.css` or `src/global.css`) for shared styles
-- [x] [chore] Extract CSS variables (colors, spacing, typography) to global CSS
-- [x] [chore] Remove inline styles and component-scoped `&:style` blocks where possible
-- [x] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
-
-### Batch 1: Tooling & Editor Config
-
-- [x] [chore] Add Biome for linting + formatting (replaces ESLint + Prettier)
-- [x] [chore] Configure .editorconfig for consistent editor settings
-- [x] [chore] Configure Zed editor to use Biome (formatter + code actions)
-
-### Batch 2: Rust Backend Modularization
-
-- [x] [chore] Refactor Rust backend: separate concerns into modules (`commands/users.rs`, `commands/notes.rs`, `db.rs`)
-- [x] [chore] Extract Rust error handling to more detailed error types
-- [x] [chore] Create consistent naming convention for Tauri commands (e.g., `user_*.rs`, `note_*.rs`)
-
-### Batch 3: Frontend Utility & Type Organization
-
-- [x] [chore] Create utility functions in `src/lib/utils/` (date formatting, validation, etc.)
-- [x] [chore] Move type definitions from `src/bindings.ts` to organized files in `src/lib/types/`
-- [x] [chore] Extract Tauri command wrappers to `src/lib/commands/` or similar
-
-### Batch 4: Reusable UI Components
-
-- [x] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
-- [x] [chore] Create consistent component props interface pattern
-
-### Batch 5: Layout & App Shell
-
-- [x] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
-- [x] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
+- [x] Global CSS with variables, utility classes, no inline styles
+- [x] Biome for linting/formatting, `.editorconfig`, Zed integration
+- [x] Rust backend modularized into modules with detailed error types
+- [x] Frontend utilities, types, and Tauri command wrappers organized
+- [x] Reusable Svelte components with consistent props pattern
+- [x] App shell layout with header, sidebar, navigation components
 
 ## Phase 1: Fix Critical Bugs & Foundation
 - [ ] [bug] Fix missing foreign key constraint on `notes.user_id`
