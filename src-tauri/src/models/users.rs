@@ -1,4 +1,4 @@
-use diesel::prelude::{AsChangeset, Insertable};
+use diesel::prelude::{Queryable, Selectable};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -11,7 +11,6 @@ pub struct User {
     pub display_name: String,
     pub created_at: i64,
 }
-
 
 #[derive(Serialize, Deserialize, Type)]
 pub struct UserData {

@@ -1,4 +1,6 @@
 use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
+use specta::Type;
 
 #[derive(Queryable, Selectable, QueryableByName)]
 #[diesel(table_name = crate::schema::notes)]
@@ -11,9 +13,8 @@ pub struct Note {
     pub updated_at: i64,
 }
 
-
 #[derive(Serialize, Deserialize, Type, Insertable)]
-#[diesel(table_name = notes)]
+#[diesel(table_name = crate::schema::notes)]
 pub struct NewNote {
     pub user_id: i32,
     pub content: String,
@@ -31,7 +32,7 @@ pub struct NoteDetail {
 }
 
 #[derive(Serialize, Deserialize, Type, AsChangeset)]
-#[diesel(table_name = notes)]
+#[diesel(table_name = crate::schema::notes)]
 pub struct UpdateNote {
     pub id: i32,
     pub content: String,
