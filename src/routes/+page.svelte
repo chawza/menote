@@ -244,12 +244,12 @@ function closeCreateModal() {
     gap: 1rem;
   }
 
-  .note-card {
+  :global(.note-card) {
     cursor: pointer;
     transition: box-shadow var(--transition-fast), transform var(--transition-fast);
   }
 
-  .note-card:hover {
+  :global(.note-card:hover) {
     box-shadow: var(--shadow-sm);
     transform: translateY(-2px);
   }
@@ -267,6 +267,7 @@ function closeCreateModal() {
     line-height: 1.5;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     flex: 1;
@@ -283,7 +284,7 @@ function closeCreateModal() {
     flex-shrink: 0;
   }
 
-  .note-card:hover .note-card__delete {
+  :global(.note-card:hover) .note-card__delete {
     opacity: 1;
   }
 
@@ -307,7 +308,7 @@ function closeCreateModal() {
     transition: opacity var(--transition-fast);
   }
 
-  .note-card:hover .note-card__date--updated {
+  :global(.note-card:hover) .note-card__date--updated {
     opacity: 0.7;
   }
 
@@ -378,11 +379,11 @@ function closeCreateModal() {
     gap: 1rem;
   }
 
-  .drawer__textarea {
+  :global(.drawer__textarea) {
     min-height: 150px;
   }
 
-  .drawer__submit {
+  :global(.drawer__submit) {
     width: 100%;
   }
 
@@ -424,12 +425,12 @@ function closeCreateModal() {
     gap: 1rem;
   }
 
-  .create-form__textarea {
+  :global(.create-form__textarea) {
     min-height: 200px;
     font-size: 1rem;
   }
 
-  .create-form__submit {
+  :global(.create-form__submit) {
     width: 100%;
     font-size: 1rem;
     padding: 0.875rem 1.5rem;
@@ -451,7 +452,7 @@ function closeCreateModal() {
       font-size: 1.75rem;
     }
 
-    .create-form__textarea {
+    :global(.create-form__textarea) {
       min-height: 150px;
       font-size: 0.875rem;
     }
