@@ -1,13 +1,15 @@
 <script lang="ts">
 import { onMount } from 'svelte';
-import { commands } from '$lib/commands';
+import Button from '$lib/components/Button.svelte';
+import Card from '$lib/components/Card.svelte';
 import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 import Modal from '$lib/components/Modal.svelte';
+import TextArea from '$lib/components/TextArea.svelte';
 import ToastContainer from '$lib/components/ToastContainer.svelte';
 import { toastStore } from '$lib/stores/toast';
 import type { NoteDetail } from '$lib/types';
 import { formatLocal, nowUnix } from '$lib/utils/date';
-import { tryCommand } from '$lib/utils/tauri';
+import { commands, tryCommand } from '$lib/utils/tauri';
 
 let notes = $state<NoteDetail[]>([]);
 let selectedNote = $state<NoteDetail | null>(null);
@@ -123,20 +125,22 @@ function closeCreateModal() {
     <div class="notes">
       <!-- add unique note by note.id and updated_at also -->
       {#each notes as note (note.id)}
-        <div class="card note-card" role="button" tabindex="0" onclick={() => openDrawer(note)} onkeydown={(e) => e.key === 'Enter' && openDrawer(note)}>
-          <div class="note-card__body">
-            <p class="note-card__content">{note.content}</p>
-            <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); handleDelete(note); }} aria-label="Delete note">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
-              </svg>
-            </button>
-          </div>
-          <div class="note-card__meta">
-            <span class="note-card__date">{formatLocal(note.created_at)}</span>
-            <span class="note-card__date note-card__date--updated">Updated: {formatLocal(note.updated_at)}</span>
-          </div>
-        </div>
+        <Card class="note-card" onclick={() => openDrawer(note)}>
+          {#snippet children()}
+            <div class="note-card__body">
+              <p class="note-card__content">{note.content}</p>
+              <button class="note-card__delete" onclick={(e) => { e.stopPropagation(); handleDelete(note); }} aria-label="Delete note">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2M10 11v6M14 11v6"/>
+                </svg>
+              </button>
+            </div>
+            <div class="note-card__meta">
+              <span class="note-card__date">{formatLocal(note.created_at)}</span>
+              <span class="note-card__date note-card__date--updated">Updated: {formatLocal(note.updated_at)}</span>
+            </div>
+          {/snippet}
+        </Card>
       {/each}
     </div>
   </div>
@@ -157,14 +161,12 @@ function closeCreateModal() {
       </div>
 
       <div class="drawer__form">
-        <textarea class="input drawer__textarea" bind:value={contentForm}></textarea>
-        <button
-          class="btn btn--primary drawer__submit"
-          onclick={() => selectedNote && handleUpdate(selectedNote)}
-          disabled={isUpdating}
-        >
-          {isUpdating ? "Updating..." : "Update"}
-        </button>
+        <TextArea class="drawer__textarea" bind:value={contentForm}></TextArea>
+        <Button variant="primary" class="drawer__submit" onclick={() => selectedNote && handleUpdate(selectedNote)} disabled={isUpdating}>
+          {#snippet children()}
+            {isUpdating ? "Updating..." : "Update"}
+          {/snippet}
+        </Button>
       </div>
     {/if}
   </div>
@@ -180,18 +182,16 @@ function closeCreateModal() {
   <Modal isShow={isCreateModalOpen} onclose={closeCreateModal} title="New Note">
     {#snippet children()}
       <div class="create-form">
-        <textarea
-          class="input create-form__textarea"
+        <TextArea
+          class="create-form__textarea"
           bind:value={newNoteContent}
           placeholder="Write your note here..."
-        ></textarea>
-        <button
-          class="btn btn--primary create-form__submit"
-          onclick={handleCreateNote}
-          disabled={isCreating}
-        >
-          {isCreating ? "Creating..." : "Create"}
-        </button>
+        ></TextArea>
+        <Button variant="primary" class="create-form__submit" onclick={handleCreateNote} disabled={isCreating}>
+          {#snippet children()}
+            {isCreating ? "Creating..." : "Create"}
+          {/snippet}
+        </Button>
       </div>
     {/snippet}
   </Modal>

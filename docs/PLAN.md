@@ -39,8 +39,8 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ### Batch 4: Reusable UI Components
 
-- [ ] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
-- [ ] [chore] Create consistent component props interface pattern
+- [x] [chore] Extract reusable Svelte components (e.g., Button, Input, Card, Badge) to `src/lib/components/`
+- [x] [chore] Create consistent component props interface pattern
 
 ### Batch 5: Layout & App Shell
 
