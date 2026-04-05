@@ -44,8 +44,8 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ### Batch 5: Layout & App Shell
 
-- [ ] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
-- [ ] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
+- [x] [chore] Add `+layout.svelte` root layout with app shell (header, main, footer)
+- [x] [chore] Extract layout components (Header, Sidebar, Navigation) to `src/lib/components/`
 
 ## Phase 1: Fix Critical Bugs & Foundation
 - [ ] [bug] Fix missing foreign key constraint on `notes.user_id`
@@ -114,15 +114,15 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 
 ## Phase 5: UX Polish & App Shell
 
-- [ ] [feat] Create `+layout.svelte` — shared app shell with header, sidebar, content area
-- [ ] [chore] Extract shared layout components (Header, Sidebar, Navigation) to `src/lib/components/layout/`
+- [x] [feat] Create `+layout.svelte` — shared app shell with header, sidebar, content area
+- [x] [chore] Extract shared layout components (Header, Sidebar, Navigation) to `src/lib/components/layout/`
 - [ ] [chore] Consolidate route-specific CSS to route-scoped styles
 - [ ] [chore] Extract animation/transition utilities to `src/lib/utils/transitions.ts`
 - [ ] [chore] Extract keyboard shortcut handler to `src/lib/utils/keyboard.ts`
 - [ ] [ux] Add loading spinner/skeleton for initial data fetch
 - [ ] [ux] Add empty state illustration when no notes exist
 - [ ] [ux] Smooth transitions between note list, view, and edit states
-- [ ] [ux] Keyboard shortcuts (Ctrl+N new note, Ctrl+S save, Ctrl+F search, Escape close)
+- [ ] [ux] Keyboard shortcuts (Ctrl+N new note, Ctrl+S save, Ctrl+F search, Escape close, Cmd+/ toggle sidebar)
 - [ ] [ux] Confirm before navigating away from unsaved edits
 - [ ] [a11y] Add ARIA labels to interactive elements
 - [ ] [a11y] Ensure keyboard navigation works for all actions

@@ -5,7 +5,6 @@ import Card from '$lib/components/Card.svelte';
 import ConfirmModal from '$lib/components/ConfirmModal.svelte';
 import Modal from '$lib/components/Modal.svelte';
 import TextArea from '$lib/components/TextArea.svelte';
-import ToastContainer from '$lib/components/ToastContainer.svelte';
 import { toastStore } from '$lib/stores/toast';
 import type { NoteDetail } from '$lib/types';
 import { formatLocal, nowUnix } from '$lib/utils/date';
@@ -116,12 +115,8 @@ function closeCreateModal() {
 }
 </script>
 
-<main class="main">
+<div class="main">
   <div class="main__container">
-    <header class="main__header">
-      <h1 class="main__title">MeNote</h1>
-    </header>
-
     <div class="notes">
       <!-- add unique note by note.id and updated_at also -->
       {#each notes as note (note.id)}
@@ -195,7 +190,7 @@ function closeCreateModal() {
       </div>
     {/snippet}
   </Modal>
-</main>
+</div>
 
 <ConfirmModal
   isShow={isDeleteModalOpen}
@@ -213,29 +208,14 @@ function closeCreateModal() {
   {/snippet}
 </ConfirmModal>
 
-<ToastContainer />
-
 <style>
   .main {
-    min-height: 100vh;
-    padding: 2rem;
+    margin-bottom: 2rem;
   }
 
   .main__container {
     max-width: 800px;
     margin: 0 auto;
-  }
-
-  .main__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-
-  .main__title {
-    font-size: 1.75rem;
-    font-weight: 600;
   }
 
   .notes {
