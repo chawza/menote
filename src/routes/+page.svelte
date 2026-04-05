@@ -1,118 +1,123 @@
 <script lang="ts">
-  import { type NoteDetail } from "../bindings";
-  import { tryCommand, commands } from "../lib/utils/tauri";
-  import { onMount } from "svelte";
-  import Modal from "../lib/components/Modal.svelte";
-  import ConfirmModal from "../lib/components/ConfirmModal.svelte";
-  import ToastContainer from "../lib/components/ToastContainer.svelte";
-  import { toastStore } from "../lib/stores/toast";
+import { onMount } from 'svelte';
+import { type NoteDetail } from '../bindings';
+import ConfirmModal from '../lib/components/ConfirmModal.svelte';
+import Modal from '../lib/components/Modal.svelte';
+import ToastContainer from '../lib/components/ToastContainer.svelte';
+import { toastStore } from '../lib/stores/toast';
+import { commands, tryCommand } from '../lib/utils/tauri';
 
-  let notes = $state<NoteDetail[]>([]);
-  let selectedNote = $state<NoteDetail | null>(null);
-  let isDrawerOpen = $state(false);
-  let contentForm = $state("");
-  let isUpdating = $state(false);
-  let isCreateModalOpen = $state(false);
-  let newNoteContent = $state("");
-  let isCreating = $state(false);
-  let isDeleteModalOpen = $state(false);
-  let noteToDelete = $state<NoteDetail | null>(null);
+let notes = $state<NoteDetail[]>([]);
+let selectedNote = $state<NoteDetail | null>(null);
+let isDrawerOpen = $state(false);
+let contentForm = $state('');
+let isUpdating = $state(false);
+let isCreateModalOpen = $state(false);
+let newNoteContent = $state('');
+let isCreating = $state(false);
+let isDeleteModalOpen = $state(false);
+let noteToDelete = $state<NoteDetail | null>(null);
 
-  onMount(async () => {
-    notes = (await tryCommand(() => commands.getNotes(1))).sort((a, b) => b.created_at - a.created_at);
+onMount(async () => {
+  notes = (await tryCommand(() => commands.getNotes(1))).sort(
+    (a, b) => b.created_at - a.created_at,
+  );
+});
+
+const formatLocal = (ts: number) => {
+  const date = new Date(ts * 1000);
+  return date.toLocaleString(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
   });
+};
 
-  const formatLocal = (ts: number) => {
-    const date = new Date(ts * 1000);
-    return date.toLocaleString(undefined, {
-      dateStyle: "medium",
-      timeStyle: "short",
-    });
-  };
+function openDrawer(note: NoteDetail) {
+  selectedNote = note;
+  contentForm = note.content || '';
+  isDrawerOpen = true;
+}
 
-  function openDrawer(note: NoteDetail) {
-    selectedNote = note;
-    contentForm = note.content || "";
-    isDrawerOpen = true;
-  }
+function closeDrawer() {
+  isDrawerOpen = false;
+  setTimeout(() => {
+    selectedNote = null;
+  }, 300);
+}
 
-  function closeDrawer() {
-    isDrawerOpen = false;
-    setTimeout(() => {
-      selectedNote = null;
-    }, 300);
-  }
-
-  async function handleUpdate(note: NoteDetail) {
-    isUpdating = true;
-    try {
-      const updatedNote = await tryCommand(() => commands.updateNote({
+async function handleUpdate(note: NoteDetail) {
+  isUpdating = true;
+  try {
+    const updatedNote = await tryCommand(() =>
+      commands.updateNote({
         id: note.id,
         content: contentForm,
         updated_at: Math.floor(Date.now() / 1000),
-      }))
-      notes = notes.map(n => n.id === updatedNote.id ? updatedNote : n);
-      toastStore.success('Note updated successfully!');
-      closeDrawer();
-    } catch {
-    } finally {
-      isUpdating = false;
-    }
+      }),
+    );
+    notes = notes.map((n) => (n.id === updatedNote.id ? updatedNote : n));
+    toastStore.success('Note updated successfully!');
+    closeDrawer();
+  } catch {
+  } finally {
+    isUpdating = false;
   }
+}
 
-  function handleDelete(note: NoteDetail) {
-    noteToDelete = note;
-    isDeleteModalOpen = true;
+function handleDelete(note: NoteDetail) {
+  noteToDelete = note;
+  isDeleteModalOpen = true;
+}
+
+function cancelDelete() {
+  isDeleteModalOpen = false;
+  noteToDelete = null;
+}
+
+async function confirmDelete() {
+  const note = noteToDelete;
+  if (!note) return;
+  try {
+    await tryCommand(() => commands.deleteNote(note.id));
+    notes = notes.filter((n) => n.id !== note.id);
+    toastStore.success('Note deleted');
+  } catch {}
+  cancelDelete();
+}
+
+async function handleCreateNote() {
+  if (!newNoteContent.trim()) {
+    toastStore.error('Please enter some content');
+    return;
   }
-
-  function cancelDelete() {
-    isDeleteModalOpen = false;
-    noteToDelete = null;
-  }
-
-  async function confirmDelete() {
-    const note = noteToDelete;
-    if (!note) return;
-    try {
-      await tryCommand(() => commands.deleteNote(note.id));
-      notes = notes.filter(n => n.id !== note.id);
-      toastStore.success('Note deleted');
-    } catch {
-    }
-    cancelDelete();
-  }
-
-  async function handleCreateNote() {
-    if (!newNoteContent.trim()) {
-      toastStore.error("Please enter some content");
-      return;
-    }
-    isCreating = true;
-    const now = Math.round(Date.now() / 1000);
-    try {
-      const newNote = await tryCommand(() => commands.createNote({
+  isCreating = true;
+  const now = Math.round(Date.now() / 1000);
+  try {
+    const newNote = await tryCommand(() =>
+      commands.createNote({
         user_id: 1,
         content: newNoteContent,
         created_at: now,
-        updated_at: now
-      }))
-      notes = [...notes, newNote].sort((a, b) => b.created_at - a.created_at);
-      toastStore.success('Note created successfully!');
-      closeCreateModal();
-    } catch {
-    } finally {
-      isCreating = false;
-    }
+        updated_at: now,
+      }),
+    );
+    notes = [...notes, newNote].sort((a, b) => b.created_at - a.created_at);
+    toastStore.success('Note created successfully!');
+    closeCreateModal();
+  } catch {
+  } finally {
+    isCreating = false;
   }
+}
 
-  function openCreateModal() {
-    isCreateModalOpen = true;
-  }
+function openCreateModal() {
+  isCreateModalOpen = true;
+}
 
-  function closeCreateModal() {
-    isCreateModalOpen = false;
-    newNoteContent = "";
-  }
+function closeCreateModal() {
+  isCreateModalOpen = false;
+  newNoteContent = '';
+}
 </script>
 
 <main class="main">

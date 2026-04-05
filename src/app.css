@@ -71,7 +71,9 @@ body {
   font-family: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color var(--transition-fast), opacity var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    opacity var(--transition-fast);
 }
 
 .btn:hover:not(:disabled) {
@@ -154,7 +156,9 @@ body {
   background-color: rgba(0, 0, 0, 0.4);
   opacity: 0;
   visibility: hidden;
-  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+  transition:
+    opacity var(--transition-normal),
+    visibility var(--transition-normal);
 }
 
 .overlay--open {

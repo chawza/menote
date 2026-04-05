@@ -1,18 +1,18 @@
 <script lang="ts">
-  import { toastStore } from '../stores/toast';
-  import Toast from './Toast.svelte';
-  import { fly } from 'svelte/transition';
-  import type { Toast as ToastInterface } from '../types/toast';
+import { fly } from 'svelte/transition';
+import { toastStore } from '../stores/toast';
+import type { Toast as ToastInterface } from '../types/toast';
+import Toast from './Toast.svelte';
 
-  let toasts = $state<ToastInterface[]>([]);
+let toasts = $state<ToastInterface[]>([]);
 
-  toastStore.subscribe(value => {
-    toasts = value;
-  });
+toastStore.subscribe((value) => {
+  toasts = value;
+});
 
-  function handleDismiss(id: string) {
-    toastStore.dismiss(id);
-  }
+function handleDismiss(id: string) {
+  toastStore.dismiss(id);
+}
 </script>
 
 {#if toasts.length > 0}

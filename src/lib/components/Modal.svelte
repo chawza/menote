@@ -1,14 +1,14 @@
 <script lang="ts">
-  import type { Snippet } from 'svelte';
+import type { Snippet } from 'svelte';
 
-  interface Props {
-    isShow: boolean;
-    onclose: () => void;
-    title?: string;
-    children: Snippet;
-  }
+interface Props {
+  isShow: boolean;
+  onclose: () => void;
+  title?: string;
+  children: Snippet;
+}
 
-  let { isShow, onclose, title, children }: Props = $props();
+let { isShow, onclose, title, children }: Props = $props();
 </script>
 
 <div

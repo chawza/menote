@@ -1,18 +1,26 @@
 <script lang="ts">
-  import Modal from "./Modal.svelte";
-  import type { Snippet } from 'svelte';
+import type { Snippet } from 'svelte';
+import Modal from './Modal.svelte';
 
-  interface Props {
-    isShow: boolean;
-    content: Snippet;
-    onconfirm: () => void;
-    oncancel: () => void;
-    title?: string;
-    confirmText?: string;
-    cancelText?: string;
-  }
+interface Props {
+  isShow: boolean;
+  content: Snippet;
+  onconfirm: () => void;
+  oncancel: () => void;
+  title?: string;
+  confirmText?: string;
+  cancelText?: string;
+}
 
-  let { isShow, content, onconfirm, oncancel, title = "Confirm", confirmText = "Confirm", cancelText = "Cancel" }: Props = $props();
+let {
+  isShow,
+  content,
+  onconfirm,
+  oncancel,
+  title = 'Confirm',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+}: Props = $props();
 </script>
 
 <Modal isShow={isShow} onclose={oncancel} title={title}>

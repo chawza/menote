@@ -1,51 +1,56 @@
 <script lang="ts">
-  import type { Toast as ToastType } from '../types/toast';
-  import { onMount } from 'svelte';
+import { onMount } from 'svelte';
+import type { Toast as ToastType } from '../types/toast';
 
-  interface Props {
-    toast: ToastType;
-    ondismiss?: (id: string) => void;
-  }
+interface Props {
+  toast: ToastType;
+  ondismiss?: (id: string) => void;
+}
 
-  let { toast, ondismiss }: Props = $props();
+let { toast, ondismiss }: Props = $props();
 
-  let progress = $state(100);
+let progress = $state(100);
 
-  onMount(() => {
-    if (toast.duration && toast.duration > 0) {
-      const startTime = Date.now();
-      const duration = toast.duration;
-      let animationFrame: number;
+onMount(() => {
+  if (toast.duration && toast.duration > 0) {
+    const startTime = Date.now();
+    const duration = toast.duration;
+    let animationFrame: number;
 
-      function animate() {
-        const elapsed = Date.now() - startTime;
-        progress = Math.max(0, 100 - (elapsed / duration) * 100);
+    function animate() {
+      const elapsed = Date.now() - startTime;
+      progress = Math.max(0, 100 - (elapsed / duration) * 100);
 
-        if (progress > 0) {
-          animationFrame = requestAnimationFrame(animate);
-        }
+      if (progress > 0) {
+        animationFrame = requestAnimationFrame(animate);
       }
-
-      animationFrame = requestAnimationFrame(animate);
-
-      return () => cancelAnimationFrame(animationFrame);
     }
-  });
 
-  function getIcon(type: string): string {
-    switch (type) {
-      case 'success': return '✓';
-      case 'info': return 'ℹ';
-      case 'warning': return '⚠';
-      case 'error': return '✕';
-      default: return '•';
-    }
-  }
+    animationFrame = requestAnimationFrame(animate);
 
-  function handleConfirm() {
-    toast.onConfirm?.();
-    ondismiss?.(toast.id);
+    return () => cancelAnimationFrame(animationFrame);
   }
+});
+
+function getIcon(type: string): string {
+  switch (type) {
+    case 'success':
+      return '✓';
+    case 'info':
+      return 'ℹ';
+    case 'warning':
+      return '⚠';
+    case 'error':
+      return '✕';
+    default:
+      return '•';
+  }
+}
+
+function handleConfirm() {
+  toast.onConfirm?.();
+  ondismiss?.(toast.id);
+}
 </script>
 
 <div

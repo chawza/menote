@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { Toast, ToastOptions, ToastType } from '../types/toast';
+import type { Toast, ToastOptions } from '../types/toast';
 
 function createToastStore() {
   const { subscribe, update } = writable<Toast[]>([]);
@@ -16,7 +16,7 @@ function createToastStore() {
       confirmText: options.confirmText ?? 'OK',
     };
 
-    update(toasts => [...toasts, toast].slice(-5));
+    update((toasts) => [...toasts, toast].slice(-5));
 
     if (toast.duration && toast.duration > 0) {
       setTimeout(() => dismiss(id), toast.duration);
@@ -26,7 +26,7 @@ function createToastStore() {
   }
 
   function dismiss(id: string) {
-    update(toasts => toasts.filter(t => t.id !== id));
+    update((toasts) => toasts.filter((t) => t.id !== id));
   }
 
   function success(message: string, options?: Partial<ToastOptions>): string {
