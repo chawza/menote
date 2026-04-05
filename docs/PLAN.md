@@ -27,8 +27,7 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 ### Batch 2: Rust Backend Modularization
 
 - [x] [chore] Refactor Rust backend: separate concerns into modules (`commands/users.rs`, `commands/notes.rs`, `db.rs`)
-- [ ] [chore] Extract Rust error handling to more detailed error types
-- [ ] [chore] Add Rust code documentation (doc comments on public APIs)
+- [x] [chore] Extract Rust error handling to more detailed error types
 - [x] [chore] Create consistent naming convention for Tauri commands (e.g., `user_*.rs`, `note_*.rs`)
 
 ### Batch 3: Frontend Utility & Type Organization

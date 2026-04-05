@@ -5,16 +5,17 @@ use specta_typescript::Typescript;
 use tauri_specta::{collect_commands, Builder};
 
 use crate::{
-    db::{establish_connection, setup_data_base}, error::AppError, models::{
-        notes::{NewNote, Note, NoteDetail, UpdateNote},
-    }
+    commands::users::get_all_users,
+    db::{establish_connection, setup_data_base},
+    error::AppError,
+    models::notes::{NewNote, Note, NoteDetail, UpdateNote},
 };
 
 pub mod commands;
+pub mod db;
 pub mod error;
 pub mod models;
 pub mod schema;
-pub mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -53,7 +54,7 @@ fn create_note(note: NewNote) -> Result<NoteDetail, AppError> {
     Ok(NoteDetail {
         id: created_note
             .id
-            .ok_or_else(|| AppError::Internal("Created note missing id".into()))?,
+            .ok_or_else(|| AppError::missing_id("Note"))?,
         user_id: created_note.user_id,
         content: created_note.content,
         created_at: created_note.created_at,
@@ -67,9 +68,7 @@ fn get_note_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<NoteDetai
         .filter(notes::id.eq(note_id))
         .first::<Note>(conn)?;
     Ok(NoteDetail {
-        id: note
-            .id
-            .ok_or_else(|| AppError::Internal("Note missing id".into()))?,
+        id: note.id.ok_or_else(|| AppError::missing_id("Note"))?,
         user_id: note.user_id,
         content: note.content,
         created_at: note.created_at,
@@ -97,7 +96,7 @@ fn delete_note(note_id: i32) -> Result<bool, AppError> {
     let conn = &mut establish_connection();
     let affected = delete_by_id(note_id, conn)?;
     if affected == 0 {
-        return Err(AppError::NotFound("Note not found".into()));
+        return Err(AppError::note_not_found(note_id));
     }
     Ok(true)
 }
@@ -118,9 +117,7 @@ fn get_notes(user_id: i32) -> Result<Vec<NoteDetail>, AppError> {
         .iter()
         .map(|note| {
             Ok(NoteDetail {
-                id: note
-                    .id
-                    .ok_or_else(|| AppError::Internal("Note missing id".into()))?,
+                id: note.id.ok_or_else(|| AppError::missing_id("Note"))?,
                 user_id: note.user_id,
                 content: note.content.clone(),
                 created_at: note.created_at,
