@@ -19,11 +19,9 @@ A markdown note-taking desktop app. Multi-user on one device, local-first, built
 - [x] [chore] Create shared CSS utility classes for common patterns (buttons, cards, inputs)
 
 ### Batch 1: Tooling & Editor Config
-
-- [ ] [chore] Add ESLint configuration if not present
-- [ ] [chore] Add Prettier configuration for code formatting
-- [ ] [chore] Configure .editorconfig for consistent editor settings
-- [ ] [chore] Add VS Code workspace settings (extensions, formatter)
+- [x] [chore] Add Biome for linting + formatting (replaces ESLint + Prettier)
+- [x] [chore] Configure .editorconfig for consistent editor settings
+- [x] [chore] Configure Zed editor to use Biome (formatter + code actions)
 
 ### Batch 2: Rust Backend Modularization
 

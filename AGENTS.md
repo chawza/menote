@@ -22,6 +22,10 @@ yarn dev                # Frontend dev server only (no Tauri)
 yarn build              # Build frontend for production
 yarn check              # TypeScript + Svelte type checking
 yarn check:watch        # Type checking in watch mode
+yarn lint               # Biome lint + format check
+yarn lint:fix           # Biome lint + format fix
+yarn format             # Biome format (write)
+yarn format:check       # Biome format check (CI)
 yarn tauri build        # Build production desktop app
 ```
 
@@ -31,7 +35,7 @@ cd src-tauri && cargo fmt --check  # Rust formatting check
 cd src-tauri && cargo test         # Run Rust tests
 ```
 
-Run `yarn check` and `cd src-tauri && cargo clippy` after any changes before completing a task.
+Run `yarn check`, `yarn lint`, and `cd src-tauri && cargo clippy` after any changes before completing a task.
 
 ## Project Structure
 
@@ -179,7 +183,6 @@ What's missing (see `docs/PLAN.md` for full roadmap):
 - Markdown rendering (Phase 4)
 - Search (Phase 6)
 - Tests (Phase 9)
-- ESLint/Prettier not configured
 
 ## Common Patterns
 
