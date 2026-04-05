@@ -1,23 +1,23 @@
 <script lang="ts" module>
-  import { defineMeta } from '@storybook/addon-svelte-csf';
-  import Toast from './Toast.svelte';
-  import type { Toast as ToastType } from '../types/toast';
+import { defineMeta } from '@storybook/addon-svelte-csf';
+import type { Toast as ToastType } from '../types/toast';
+import Toast from './Toast.svelte';
 
-  const { Story } = defineMeta({
-    component: Toast,
-    tags: ['autodocs'],
-  });
+const { Story } = defineMeta({
+  component: Toast,
+  tags: ['autodocs'],
+});
 
-  function createToast(overrides: Partial<ToastType> = {}): ToastType {
-    return {
-      id: 'toast-1',
-      type: 'success',
-      message: 'This is a toast message',
-      showIcon: true,
-      duration: 0,
-      ...overrides,
-    };
-  }
+function createToast(overrides: Partial<ToastType> = {}): ToastType {
+  return {
+    id: 'toast-1',
+    type: 'success',
+    message: 'This is a toast message',
+    showIcon: true,
+    duration: 0,
+    ...overrides,
+  };
+}
 </script>
 
 <Story name="Success" args={{ toast: createToast({ type: 'success', message: 'Note saved successfully!' }), ondismiss: () => {} }}>

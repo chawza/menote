@@ -1,17 +1,17 @@
 <script lang="ts" module>
-  import { defineMeta } from '@storybook/addon-svelte-csf';
-  import ConfirmModal from './ConfirmModal.svelte';
+import { defineMeta } from '@storybook/addon-svelte-csf';
+import ConfirmModal from './ConfirmModal.svelte';
 
-  const { Story } = defineMeta({
-    component: ConfirmModal,
-    tags: ['autodocs'],
-    argTypes: {
-      isShow: { control: 'boolean' },
-      title: { control: 'text' },
-      confirmText: { control: 'text' },
-      cancelText: { control: 'text' },
-    },
-  });
+const { Story } = defineMeta({
+  component: ConfirmModal,
+  tags: ['autodocs'],
+  argTypes: {
+    isShow: { control: 'boolean' },
+    title: { control: 'text' },
+    confirmText: { control: 'text' },
+    cancelText: { control: 'text' },
+  },
+});
 </script>
 
 <Story name="Default" args={{ isShow: true, title: 'Confirm', confirmText: 'Confirm', cancelText: 'Cancel', onconfirm: () => {}, oncancel: () => {} }}>

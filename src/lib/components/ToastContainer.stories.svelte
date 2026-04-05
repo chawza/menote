@@ -1,25 +1,25 @@
 <script lang="ts" module>
-  import { defineMeta } from '@storybook/addon-svelte-csf';
-  import ToastContainer from './ToastContainer.svelte';
-  import { toastStore } from '../stores/toast';
+import { defineMeta } from '@storybook/addon-svelte-csf';
+import { toastStore } from '../stores/toast';
+import ToastContainer from './ToastContainer.svelte';
 
-  const { Story } = defineMeta({
-    component: ToastContainer,
-    tags: ['autodocs'],
-  });
+const { Story } = defineMeta({
+  component: ToastContainer,
+  tags: ['autodocs'],
+});
 
-  function addSampleToasts() {
-    toastStore.success('Note saved');
-    toastStore.info('Syncing...');
-    toastStore.warning('Low disk space');
-  }
+function addSampleToasts() {
+  toastStore.success('Note saved');
+  toastStore.info('Syncing...');
+  toastStore.warning('Low disk space');
+}
 
-  function addAllTypes() {
-    toastStore.success('Operation successful');
-    toastStore.info('Tip: Use keyboard shortcuts');
-    toastStore.warning('Auto-save paused');
-    toastStore.error('Connection lost');
-  }
+function addAllTypes() {
+  toastStore.success('Operation successful');
+  toastStore.info('Tip: Use keyboard shortcuts');
+  toastStore.warning('Auto-save paused');
+  toastStore.error('Connection lost');
+}
 </script>
 
 <Story name="Empty">

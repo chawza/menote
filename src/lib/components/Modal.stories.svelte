@@ -1,15 +1,15 @@
 <script lang="ts" module>
-  import { defineMeta } from '@storybook/addon-svelte-csf';
-  import Modal from './Modal.svelte';
+import { defineMeta } from '@storybook/addon-svelte-csf';
+import Modal from './Modal.svelte';
 
-  const { Story } = defineMeta({
-    component: Modal,
-    tags: ['autodocs'],
-    argTypes: {
-      isShow: { control: 'boolean' },
-      title: { control: 'text' },
-    },
-  });
+const { Story } = defineMeta({
+  component: Modal,
+  tags: ['autodocs'],
+  argTypes: {
+    isShow: { control: 'boolean' },
+    title: { control: 'text' },
+  },
+});
 </script>
 
 <Story name="Open" args={{ isShow: true, onclose: () => {}, title: 'Modal Title' }}>
