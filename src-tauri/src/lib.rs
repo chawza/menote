@@ -1,24 +1,20 @@
 use std::env;
 
 use diesel::prelude::*;
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
-use dotenv::dotenv;
 use specta_typescript::Typescript;
 use tauri_specta::{collect_commands, Builder};
 
 use crate::{
-    error::AppError,
-    models::{
+    db::{establish_connection, setup_data_base}, error::AppError, models::{
         notes::{NewNote, Note, NoteDetail, UpdateNote},
-        users::{User, UserData},
-    },
+    }
 };
 
+pub mod commands;
 pub mod error;
 pub mod models;
 pub mod schema;
-
-pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
+pub mod db;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -45,51 +41,6 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-
-pub fn establish_connection() -> SqliteConnection {
-    dotenv().ok();
-    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    SqliteConnection::establish(&database_url).expect("Failed to connect to database")
-}
-
-fn setup_data_base(app: &tauri::App) {
-    use tauri::Manager;
-    let app_dir = app.path().app_data_dir().unwrap();
-    std::fs::create_dir_all(&app_dir).expect("Failed to create app data dir");
-
-    let db_path = app_dir.join("menote.sqlite");
-    println!("db path: {}", db_path.display());
-
-    env::set_var("DATABASE_URL", &db_path);
-
-    let mut conn = establish_connection();
-    conn.run_pending_migrations(MIGRATIONS)
-        .expect("Failed to run migrations");
-}
-
-#[specta::specta]
-#[tauri::command]
-fn get_all_users() -> Result<Vec<UserData>, AppError> {
-    use crate::schema::users::dsl::*;
-
-    let conn = &mut establish_connection();
-    let fetched = users.select(User::as_select()).load(conn)?;
-    let results: Vec<UserData> = fetched
-        .into_iter()
-        .map(|user| {
-            Ok(UserData {
-                id: user
-                    .id
-                    .ok_or_else(|| AppError::Internal("User missing id".into()))?,
-                email: user.email,
-                display_name: user.display_name,
-                created_at: user.created_at,
-            })
-        })
-        .collect::<Result<Vec<_>, AppError>>()?;
-    Ok(results)
-}
-
 #[specta::specta]
 #[tauri::command]
 fn create_note(note: NewNote) -> Result<NoteDetail, AppError> {
