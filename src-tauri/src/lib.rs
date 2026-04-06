@@ -1,4 +1,5 @@
 use specta_typescript::Typescript;
+use tauri::Manager;
 use tauri_specta::{collect_commands, Builder};
 
 use crate::commands::notes::{create_note, delete_note, get_notes, update_note};
@@ -10,6 +11,14 @@ pub mod db;
 pub mod error;
 pub mod models;
 pub mod schema;
+
+struct UserSession {
+    user_id: i32
+}
+
+pub struct AppState {
+    session: Option<UserSession>
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -31,6 +40,7 @@ pub fn run() {
         .invoke_handler(specta_builder.invoke_handler())
         .setup(|app| {
             setup_data_base(app);
+            app.manage(AppState{ session: None});
             Ok(())
         })
         .run(tauri::generate_context!())

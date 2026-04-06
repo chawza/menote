@@ -1,15 +1,26 @@
 use crate::{
-    db::establish_connection,
-    error::AppError,
-    models::notes::{NewNote, Note, NoteDetail, UpdateNote},
+    AppState, db::establish_connection, error::AppError, models::notes::{NewNote, Note, NoteDetail, UpdateNote}
 };
 use diesel::{ExpressionMethods, QueryDsl, RunQueryDsl, SqliteConnection};
 
 #[specta::specta]
 #[tauri::command]
-pub fn create_note(note: NewNote) -> Result<NoteDetail, AppError> {
+pub fn create_note(note: NewNote, state: tauri::State<AppState>) -> Result<NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
     use diesel::insert_into;
+
+    let session = match &state.session {
+        Some(session) => {
+            session
+        }
+        None => {
+            return Err(AppError::unauthorized("Need Loggedin"));
+        }
+    };
+
+    if note.user_id != session.user_id {
+        return Err(AppError::unauthorized("Cannot create note for another user"));
+    }
 
     let conn = &mut establish_connection();
     let created_note: Note = insert_into(notes).values(&note).get_result(conn)?;
@@ -46,11 +57,28 @@ fn delete_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<usize, AppE
 
 #[specta::specta]
 #[tauri::command]
-pub fn update_note(note: UpdateNote) -> Result<NoteDetail, AppError> {
+pub fn update_note(update_note: UpdateNote, state: tauri::State<AppState>) -> Result<NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
+
+    match &state.session {
+        Some(session) => {
+            session
+        }
+        None => {
+            return Err(AppError::unauthorized("Need Loggedin"));
+        }
+    };
     let conn = &mut establish_connection();
+    let note = match get_note_by_id(update_note.id, conn) {
+        Ok(note) => note,
+        Err(e) => return Err(e),
+    };
+    if note.user_id != state.session.as_ref().unwrap().user_id {
+        return Err(AppError::unauthorized("Cannot update note for another user"));
+    }
+
     diesel::update(notes.filter(id.eq(note.id)))
-        .set(&note)
+        .set(&update_note)
         .execute(conn)?;
     get_note_by_id(note.id, conn)
 }
@@ -68,13 +96,23 @@ pub fn delete_note(note_id: i32) -> Result<bool, AppError> {
 
 #[specta::specta]
 #[tauri::command]
-pub fn get_notes(user_id: i32) -> Result<Vec<NoteDetail>, AppError> {
+pub fn get_notes(state: tauri::State<AppState>) -> Result<Vec<NoteDetail>, AppError> {
     use crate::schema::notes;
+
+    let session = match &state.session {
+        Some(session) => {
+            session
+        }
+        None => {
+            return Err(AppError::unauthorized("Need Loggedin"));
+        }
+    };
+
 
     let conn = &mut establish_connection();
 
     let fetched_notes: Vec<Note> = notes::table
-        .filter(notes::user_id.eq(user_id))
+        .filter(notes::user_id.eq(session.user_id))
         .order_by(notes::created_at.desc())
         .load::<Note>(conn)?;
 
