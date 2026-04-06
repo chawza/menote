@@ -40,7 +40,7 @@ pub fn run() {
         .invoke_handler(specta_builder.invoke_handler())
         .setup(|app| {
             setup_data_base(app);
-            app.manage(AppState{ session: None});
+            app.manage(AppState{ session: Some(UserSession{ user_id: 1})});
             Ok(())
         })
         .run(tauri::generate_context!())

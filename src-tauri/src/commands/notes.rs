@@ -9,14 +9,7 @@ pub fn create_note(note: NewNote, state: tauri::State<AppState>) -> Result<NoteD
     use crate::schema::notes::dsl::*;
     use diesel::insert_into;
 
-    let session = match &state.session {
-        Some(session) => {
-            session
-        }
-        None => {
-            return Err(AppError::unauthorized("Need Loggedin"));
-        }
-    };
+    let session = state.session.as_ref().ok_or_else(|| AppError::unauthorized("Need Log in"))?;
 
     if note.user_id != session.user_id {
         return Err(AppError::unauthorized("Cannot create note for another user"));
@@ -59,15 +52,8 @@ fn delete_by_id(note_id: i32, conn: &mut SqliteConnection) -> Result<usize, AppE
 #[tauri::command]
 pub fn update_note(update_note: UpdateNote, state: tauri::State<AppState>) -> Result<NoteDetail, AppError> {
     use crate::schema::notes::dsl::*;
+    state.session.as_ref().ok_or_else(|| AppError::unauthorized("Need Log in"))?;
 
-    match &state.session {
-        Some(session) => {
-            session
-        }
-        None => {
-            return Err(AppError::unauthorized("Need Loggedin"));
-        }
-    };
     let conn = &mut establish_connection();
     let note = match get_note_by_id(update_note.id, conn) {
         Ok(note) => note,
@@ -98,16 +84,7 @@ pub fn delete_note(note_id: i32) -> Result<bool, AppError> {
 #[tauri::command]
 pub fn get_notes(state: tauri::State<AppState>) -> Result<Vec<NoteDetail>, AppError> {
     use crate::schema::notes;
-
-    let session = match &state.session {
-        Some(session) => {
-            session
-        }
-        None => {
-            return Err(AppError::unauthorized("Need Loggedin"));
-        }
-    };
-
+    let session = state.session.as_ref().ok_or_else(|| AppError::unauthorized("Need Log in"))?;
 
     let conn = &mut establish_connection();
 
