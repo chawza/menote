@@ -7,17 +7,17 @@ use specta::Type;
 #[diesel(check_for_backend(diesel::sqlite::Sqlite))]
 pub struct Note {
     pub id: Option<i32>,
-    pub user_id: i32,
     pub content: Option<String>,
     pub created_at: i64,
     pub updated_at: i64,
+    pub user_id: i32,
 }
 
 #[derive(Serialize, Deserialize, Type, Insertable)]
 #[diesel(table_name = crate::schema::notes)]
 pub struct NewNote {
     pub user_id: i32,
-    pub content: String,
+    pub content: Option<String>,
     pub created_at: i64,
     pub updated_at: i64,
 }
@@ -35,6 +35,6 @@ pub struct NoteDetail {
 #[diesel(table_name = crate::schema::notes)]
 pub struct UpdateNote {
     pub id: i32,
-    pub content: String,
+    pub content: Option<String>,
     pub updated_at: i64,
 }

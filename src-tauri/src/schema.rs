@@ -4,8 +4,8 @@ diesel::table! {
     notes (id) {
         id -> Nullable<Integer>,
         content -> Nullable<Text>,
-        created_at -> Integer,
-        updated_at -> Integer,
+        created_at -> BigInt,
+        updated_at -> BigInt,
         user_id -> Integer,
     }
 }
@@ -15,7 +15,7 @@ diesel::table! {
         id -> Nullable<Integer>,
         email -> Text,
         display_name -> Text,
-        created_at -> Integer,
+        created_at -> BigInt,
     }
 }
 
