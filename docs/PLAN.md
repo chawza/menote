@@ -59,8 +59,8 @@ All frontend UI follows the designs in `src-tauri/src/ui/stitch/`:
 
 ### Batch 1.4 — Remove unused `ts-rs` dependency
 > Trivial cleanup. The `ts-rs` crate in `Cargo.toml` is unused (project uses `specta`/`tauri-specta` for type generation). Remove the dependency and verify build.
-- [ ] [infra] Remove `ts-rs = "12.0.1"` from `src-tauri/Cargo.toml`
-- [ ] [infra] Verify `cargo check` passes after removal
+- [x] [infra] Remove `ts-rs = "12.0.1"` from `src-tauri/Cargo.toml`
+- [x] [infra] Verify `cargo check` passes after removal
 
 ### Batch 1.5 — Pagination on notes index
 > Adds `limit`/`offset` parameters to the `get_notes` command and updates the frontend to support paginated loading. Changes the `get_notes` function signature (breaking change for bindings) and adds a `NoteListResult` DTO wrapping `notes` + `total_count`.
