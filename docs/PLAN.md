@@ -122,15 +122,16 @@ All frontend UI follows the designs in `src-tauri/src/ui/stitch/`:
 - [ ] [security] All note commands require active user session (return error if no session)
 - [ ] [security] Add session token or user_id tracking in Rust app state
 - [ ] [ux] Login/unlock screen matching `simple_user_login` design:
-  - [ ] Centered layout on `surface` bg with radial gradient vignette
-  - [ ] Brand block: "THE ATELIER" + "PRIVATE WORKSPACE" subtitle
-  - [ ] User avatar: 96px circle, grayscale→color on hover, gold border glow
-  - [ ] User display name below avatar
-  - [ ] Password input: animated underline (`AnimatedUnderlineInput`), placeholder "Key required"
+  - [x] Centered layout on `surface` bg with radial gradient vignette
+  - [x] Brand block: "MENOTE" + "Private Workspace" subtitle → `BrandHeader` component
+  - [x] User avatar: 96px circle, grayscale→color on hover, gold border glow → `UserAvatar` component (initials-based)
+  - [x] User display name below avatar
+  - [x] Password input: animated underline (`AnimatedUnderlineInput`), placeholder "Key required" → `PasswordInput` component
   - [ ] "Switch User" link — small uppercase tracked text
   - [ ] Decorative L-shaped corner elements (desktop only)
-  - [ ] "End-to-End Encrypted" footer with lock icon
-- [ ] [ux] User switcher: grid of user avatars with names, click to select → show password input
+  - [x] "End-to-End Encrypted" footer with lock icon → `AuthFooter` component
+- [x] [ux] User switcher: grid of user avatars with names, click to select → show password input → `UserSelector` component
+- [x] [ux] First-run flow: welcome screen → create first user (display_name + password) → `SignupForm` component
 - [ ] [ux] First-run flow: welcome screen → create first user (display_name + password)
 - [ ] [ux] "Add new user" option in user switcher
 - [ ] [ux] "Delete user" option in user switcher (with confirmation, cascades to notes)

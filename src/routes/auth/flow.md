@@ -21,6 +21,6 @@ all authetntication pages should be in `/auth/*` path
 - [login page](src-tauri/src/ui/stitch/simple_user_login)
 
 # tasklists
-- [ ] create ui componenets in `src/lib/components/auth/` (with storybook)
+- [x] create ui componenets in `src/lib/components/auth/` (with storybook)
 - [ ] create auth backend in tauri
 - [ ] create page from used components and plug the tauir commands
