@@ -22,6 +22,7 @@
   --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
+  --auth-glow: rgba(196, 167, 125, 0.1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -42,6 +43,7 @@
     --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+    --auth-glow: rgba(212, 183, 141, 0.15);
   }
 }
 
