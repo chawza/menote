@@ -338,9 +338,213 @@ All frontend UI follows the designs in `src-tauri/src/ui/stitch/`:
 - [ ] [ux] Note character counter while editing
 - [ ] [ux] Drag-to-resize sidebar
 
+## Phase 15: Remote Sync (Per-User SQLite Backup)
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Per-User Sync Model                         │
+│                                                                  │
+│   Each user owns their SQLite file. No cross-user sync.          │
+│   Server stores bare .sqlite files as user backups.             │
+│   Conflict resolution happens on the CLIENT (each device).      │
+└─────────────────────────────────────────────────────────────────┘
+
+Device A (Phone)                          Device B (Desktop)
+┌─────────────────┐                      ┌─────────────────┐
+│ local SQLite    │ ◀───── sync ──────▶ │ local SQLite    │
+│                 │                      │                 │
+│ sync_log table  │                      │ sync_log table  │
+│ - tracks changes│                      │ - tracks changes│
+└─────────────────┘                      └─────────────────┘
+         │                                        │
+         │         ┌─────────────────────┐        │
+         └────────▶│  Server (dumb storage)│◀──────┘
+                   │  /backup/user123.sqlite │
+                   └─────────────────────┘
+                            │
+              User A's backup (SQLite file)
+              No conflict resolution logic here.
+              Just stores the file.
+```
+
+### Sync Strategy: Bare SQLite Upload
+
+Each device maintains its own SQLite file locally. On sync:
+1. Device compares its `sync_log` with server's `sync_log`
+2. Device merges changes (client-side resolution)
+3. Device uploads merged SQLite to server
+4. Other devices pull the updated file on next sync
+
+### Data Model
+
+#### Local SQLite Schema (per user)
+
+```sql
+-- All existing tables...
+
+-- NEW: Sync tracking
+CREATE TABLE sync_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    table_name TEXT NOT NULL,
+    row_id TEXT NOT NULL,
+    operation TEXT NOT NULL,  -- INSERT, UPDATE, DELETE
+    changed_at TEXT NOT NULL, -- ISO8601 timestamp
+    old_values TEXT,          -- JSON of previous state
+    new_values TEXT,          -- JSON of new state
+    synced INTEGER DEFAULT 0  -- boolean
+);
+
+CREATE TABLE sync_state (
+    key TEXT PRIMARY KEY,
+    value TEXT
+);
+-- Stored: last_sync_time, device_id, device_name
+```
+
+#### Server Storage
+
+```
+/backup/
+  └── {user_id}.sqlite   -- One SQLite file per user
+  └── {user_id}.meta     -- Metadata (last_modified, hash)
+```
+
+### Sync Protocol
+
+```
+SYNC REQUEST (Device → Server)
+───────────────────────────────────────
+GET /backup/{user_id}/meta
+  → Returns: last_modified, file_hash
+
+If local hash != server hash:
+  1. Download server SQLite
+  2. Compare sync_logs (local vs server)
+  3. Merge changes (last-write-wins per row)
+  4. Apply merged changes to local
+  5. Upload merged SQLite to server
+
+SYNC RESPONSE (Server → Device)
+───────────────────────────────────────
+PUT /backup/{user_id}
+  Body: (binary SQLite file)
+  → Stores as /backup/{user_id}.sqlite
+```
+
+### Conflict Resolution Strategy
+
+| Scenario | Resolution |
+|----------|------------|
+| Same row edited on 2 devices | Last-write-wins (compare `changed_at` timestamps) |
+| Row deleted on one device, edited on other | Delete wins |
+| Same row inserted on 2 devices | Keep both (different row IDs) |
+
+### Implementation Tasks
+
+#### Batch 15.1 — Sync Infrastructure
+
+- [ ] [data] Create `sync_log` table migration
+  - Columns: `id`, `table_name`, `row_id`, `operation`, `changed_at`, `old_values`, `new_values`, `synced`
+  - Indexes on `(table_name, row_id)`, `(synced)`
+- [ ] [data] Create `sync_state` table migration
+  - Columns: `key TEXT PRIMARY KEY`, `value TEXT`
+  - Store: `last_sync_time`, `device_id`, `device_name`
+- [ ] [feat] Implement `log_change()` helper — wraps all INSERT/UPDATE/DELETE
+  - Automatically writes to `sync_log` on every data mutation
+  - Captures old/new values as JSON
+- [ ] [feat] Implement `mark_synced()` helper — marks log entries as synced
+- [ ] [feat] Implement `get_unsynced_changes()` query — returns all `synced = 0` entries
+- [ ] [feat] Implement `apply_change()` — applies a single change from sync_log
+- [ ] [feat] Implement `resolve_conflicts()` — last-write-wins merge logic
+
+#### Batch 15.2 — Sync Tauri Commands
+
+- [ ] [feat] Add `sync_now()` Tauri command
+  - Downloads server SQLite (if exists)
+  - Merges with local using sync_log
+  - Uploads merged result to server
+  - Updates `sync_state.last_sync_time`
+  - Returns: `{ status, changes_applied, conflicts_resolved }`
+- [ ] [feat] Add `get_sync_status()` Tauri command
+  - Returns: `{ last_sync, device_id, pending_changes, server_available }`
+- [ ] [feat] Add `set_sync_server(url)` Tauri command
+  - Configures remote server URL for backup
+  - Stores in `sync_state`
+- [ ] [feat] Add `export_sqlite()` Tauri command — exports raw SQLite file
+- [ ] [feat] Add `import_sqlite()` Tauri command — imports SQLite file (for new device)
+
+#### Batch 15.3 — Sync UI
+
+- [ ] [ux] Sync status indicator in header
+  - Icon: cloud with checkmark (synced) / cloud with arrows (syncing) / cloud-off (offline)
+  - Tooltip: "Last synced: X minutes ago" / "Sync failed"
+- [ ] [ux] Manual sync button — trigger `sync_now()` on click
+- [ ] [ux] Sync settings in preferences
+  - Server URL input
+  - "Sync now" button
+  - "Reset sync" (download server version, discard local changes)
+- [ ] [ux] Conflict notification
+  - Toast: "Conflict resolved: [note title] — kept version from [device]"
+  - Or: prompt user to pick which version to keep
+- [ ] [ux] First-time sync flow
+  - If no server file: upload local SQLite
+  - If server file exists: download and merge
+
+#### Batch 15.4 — Simple Sync Server Reference
+
+> A minimal reference server implementation for self-hosting.
+
+- [ ] [feat] Create `sync-server/` directory with minimal Rust server
+  - Actix-web or Axum for HTTP
+  - Endpoints:
+    - `GET /backup/{user_id}` → returns SQLite file
+    - `PUT /backup/{user_id}` → stores SQLite file
+    - `GET /backup/{user_id}/meta` → returns metadata
+  - No auth (user provides user_id, simple token auth optional)
+  - File-based storage (`/backup/{user_id}.sqlite`)
+- [ ] [feat] Add Docker support for sync server
+- [ ] [docs] Document sync server setup in `docs/sync-guide.md`
+
+### Server Requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| Type | File storage only (dumb) |
+| Storage | SQLite files, one per user |
+| Protocol | HTTPS (for security) |
+| Auth | Token-based (user provides) |
+| Hosting | Any VPS ($5/mo), S3, or self-hosted |
+
+### Client Requirements
+
+| Component | Requirement |
+|-----------|-------------|
+| Network | `tauri-plugin-http` for HTTPS requests |
+| Storage | Local SQLite unchanged |
+| Sync logic | All in Rust backend |
+| Conflict resolution | Client-side (last-write-wins) |
+
+### Things We CAN'T Do With This Approach
+
+- ❌ Real-time sync (only on-demand)
+- ❌ Cross-user collaboration (per-user isolated)
+- ❌ Partial sync (whole file always)
+- ❌ Automatic background sync (requires app to be open)
+- ❌ Web dashboard for notes (server only stores raw SQLite)
+
+### Alternatives Considered
+
+| Approach | Why Not |
+|---------|---------|
+| PostgreSQL backend | Overkill for single-user per DB |
+| CRDT (automerge/yrs) | Complex, overkill for per-user backup |
+| Electric SQL | No Rust/Tauri client |
+| Supabase/Firebase BaaS | Adds external dependency, cost |
+
 ## Future (Not Planned Now)
 
-- [feat] Cloud sync
 - [feat] Note attachments (images, files)
 - [feat] Note categories/folders
 - [feat] Collaborative editing
